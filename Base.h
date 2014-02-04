@@ -5,6 +5,8 @@
 #include <stdlib.h>     /* srand, rand */
 #include <string.h>
 #include <stdint.h>
+#include <float.h>
+
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <iostream>
@@ -47,6 +49,9 @@ using namespace __gnu_cxx;
 //#define INT32_MAX (~(uint32_t)0)
 //#define INT32_MIN (~(uint32_t)0)
 #endif
+
+//#define Fudge (0.0000000000000000000001) // DBL_EPSILON  ?
+#define Fudge (DBL_EPSILON*2)
 
 #define allocsafe(T, num) (T*)malloc(sizeof(T)*num)
 #define freesafe(obj) free(obj)
@@ -160,3 +165,4 @@ static void Distribution() {
 #endif
 
 #endif // BASE_H_INCLUDED
+

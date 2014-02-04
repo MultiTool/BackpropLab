@@ -32,6 +32,12 @@ get stats on fail rate of 100 (-5) classic vs squish.
 */
 
 int main() {
+  if (false) {
+    printf("Fudge:%lf\n", Fudge/Fudge);
+    printf("0.0/0.0:%lf\n", 0.0/0.0);
+    return 0;
+  }
+
   int numgens = 4000;
   int finalfail = 0;
   uint32_t num0, num1;
@@ -71,3 +77,4 @@ int main() {
   printf("numgens:%li, finalfail:%li\n", numgens, finalfail);
   return 0;
 }
+
