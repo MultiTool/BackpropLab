@@ -137,4 +137,3 @@ public:
 
 
 #endif // CLUSTER_H_INCLUDED
-

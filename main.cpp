@@ -32,7 +32,19 @@ get stats on fail rate of 100 (-5) classic vs squish.
 */
 
 int main() {
-  if (false) {
+  if (true) {
+    NumVec nv;
+    //nv.push_back(0.5);nv.push_back(0.5);nv.push_back(0.5);nv.push_back(0.5);
+    nv.push_back(0.0);nv.push_back(0.0);nv.push_back(0.0);nv.push_back(0.0);
+    FunSurfGrid fs(4);
+    fs.Create_Dummy_Ramp();
+    fs.Print_Me();
+    printf("\n");
+    double alt = fs.Eval(&nv);
+    printf("alt:%lf\n", alt);
+    double base = 1.0;
+    printf("floor(base):%lf\n", floor(base));
+    printf("floor(base-DBL_EPSILON):%lf\n", floor(base-DBL_EPSILON));
     printf("Fudge:%lf\n", Fudge/Fudge);
     printf("0.0/0.0:%lf\n", 0.0/0.0);
     return 0;
@@ -77,4 +89,3 @@ int main() {
   printf("numgens:%li, finalfail:%li\n", numgens, finalfail);
   return 0;
 }
-

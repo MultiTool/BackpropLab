@@ -53,6 +53,10 @@ using namespace __gnu_cxx;
 //#define Fudge (0.0000000000000000000001) // DBL_EPSILON  ?
 #define Fudge (DBL_EPSILON*2)
 
+//#ifndef override
+//#define override
+//#endif
+
 #define allocsafe(T, num) (T*)malloc(sizeof(T)*num)
 #define freesafe(obj) free(obj)
 
@@ -165,4 +169,3 @@ static void Distribution() {
 #endif
 
 #endif // BASE_H_INCLUDED
-
