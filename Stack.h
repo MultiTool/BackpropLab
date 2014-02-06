@@ -18,7 +18,34 @@ public:
     }
   }
   /* ********************************************************************** */
+  void Attach_FunSurf(FunSurfGridPtr fsurf0) {
+    size_t cnt;
+    ClusterPtr cluster;
+    size_t siz = this->Layers.size();
+    for (cnt=0; cnt<siz; cnt++) {
+      cluster = this->Layers.at(cnt);
+      cluster->Attach_FunSurf(fsurf0);
+    }
+  }
+  /* ********************************************************************** */
   void Create_Simple() {
+    ClusterPtr clprev, clnow;
+    double LRate = 0.5;
+    InLayer = clnow = new Cluster(3); Layers.push_back(clnow);
+    clnow->Set_Learning_Rate(LRate);
+    clprev = clnow;
+    for (int lcnt=0; lcnt<1; lcnt++) {
+      clnow = new Cluster(2); Layers.push_back(clnow);
+      clnow->Connect_Other_Cluster(clprev);
+      clnow->Set_Learning_Rate(LRate);
+      clprev = clnow;
+    }
+    OutLayer = clnow = new Cluster(1); Layers.push_back(clnow);
+    clnow->Connect_Other_Cluster(clprev);
+    clnow->Set_Learning_Rate(LRate);
+  }
+  /* ********************************************************************** */
+  void Create_Any_Depth() {
     ClusterPtr clprev, clnow;
     InLayer = clnow = new Cluster(3); Layers.push_back(clnow);
     clnow->Set_Learning_Rate(0.5);

@@ -15,20 +15,16 @@ typedef std::vector<FunSurfPtr> FunSurfVec;
 class FunSurf {
 public:
   uint32_t NumDims;
-  uint32_t Rez;
-  double SubRez;
-
   /* ********************************************************************** */
-  FunSurf(uint32_t NumDims0) : FunSurf() {
+  FunSurf(uint32_t NumDims0) {//} : FunSurf(Rez0) {
     this->NumDims = NumDims0;
   }
   /* ********************************************************************** */
-  FunSurf() {
-    Rez = 8;
-    SubRez = Rez-1;
+  ~FunSurf() {
   }
   /* ********************************************************************** */
-  ~FunSurf() {
+  virtual double Eval(double *HitVec) {
+    return 1.0;// dummy
   }
   /* ********************************************************************** */
   virtual double Eval(NumVecPtr invec) {
@@ -51,6 +47,8 @@ typedef FunSurfGrid *FunSurfGridPtr;
 typedef std::vector<FunSurfGridPtr> FunSurfGridVec;
 class FunSurfGrid : public FunSurf {
 public:
+  uint32_t Rez, LastRez;
+  double SubRez;
   uint32_t NumCorners;
   uint32_t NumCells;
   uint32_t *Strides;
@@ -59,13 +57,14 @@ public:
   uint32_t *ctrloc;
   const double DoubleFudge = Fudge*2;
   /* ********************************************************************** */
-  FunSurfGrid() {
-    Rez = 8;
-    SubRez = Rez-1;
-  }
+//  FunSurfGrid(uint32_t Rez0) {
+//    Rez = Rez0;
+//    SubRez = Rez-1;
+//  }
   /* ********************************************************************** */
-  FunSurfGrid(uint32_t NumDims0) : FunSurfGrid() {
-    this->NumDims = NumDims0;
+  FunSurfGrid(uint32_t NumDims0, uint32_t Rez0) : FunSurf(NumDims0) {//: FunSurfGrid(Rez0) {
+    Rez = Rez0; SubRez = Rez-1;
+    LastRez = Rez-1;
     this->NumCorners = 1<<NumDims;
     this->NumCells = pow(Rez, NumDims);
     Strides = allocsafe(uint32_t, NumDims);
@@ -102,8 +101,10 @@ public:
   }
   /* ********************************************************************** */
   void Create_Dummy_Ramp() {
+    // double fred = Node::sigmoid_deriv_postfire(3.0);
     int LastDim = this->NumDims-1;
     double cellval;
+    double temp;
     double slope = 1.0/(double)this->NumDims;
     uint32_t dimdex, rem;
     //div_t split;
@@ -115,16 +116,18 @@ public:
         dimdex = rem / Strides[dcnt];
         // dimdex = cellcnt / Strides[dcnt];
         //printf("cellcnt:%li, dimdex:%li\n", cellcnt, dimdex);
-        cellval += ((double)dimdex)*slope;
+        temp = slope*( ((double)dimdex)/((double)Rez-1)*2.0-1.0 );
+        cellval += temp;//((double)dimdex)*slope;
         rem = rem % Strides[dcnt];
       }
       //printf("\n");
+      //this->Space[cellcnt] = cellval-(0.5*(double)(this->Rez));
       this->Space[cellcnt] = cellval;
     }
   }
   /* ********************************************************************** */
   void Print_Me() override {
-    printf("Space:");
+    printf("Space (NumCells=%li):", this->NumCells);
     for (int cellcnt=0; cellcnt<this->NumCells; cellcnt++) {
       if (cellcnt%Rez==0) {
         printf("\n");
@@ -133,13 +136,80 @@ public:
         printf("\n");
       }
       double cellval = this->Space[cellcnt];
-      printf("%lf, ", cellval);
+      printf("%10.5lf, ", cellval);
     }
+  }
+  /* ********************************************************************** */
+  double Eval(double *HitVec) override {
+    // the purpose here is to linearly interpolate the value of a point inside a 1*1*1etc N-dimesional cube, based on the corner values.
+    uint32_t bitoffset;
+
+    double PointVal;
+    uint32_t NbrDexs[NumCorners];
+    uint32_t NbrDex;
+    double weights[NumDims][2];
+    double ctrpoint_mapped[NumDims];
+    // ctrloc is the 0,0,0... origin of the 1.0*1.0 box where the HitVec hit. AKA floor() of all HitVec coords
+    uint32_t orgdex = 0;
+
+    for (int dcnt=0; dcnt<NumDims; dcnt++) {
+      double coord = HitVec[dcnt];
+      coord = (coord + 1.0)/2.0;
+      coord = Fudge + (coord * (SubRez-DoubleFudge));//coord = coord * 7.0; // 8;
+      // coord = Fudge + ( (coord + 1.0) * 0.5 * (SubRez-DoubleFudge));//coord = coord * 7.0; // 8;
+      ctrpoint_mapped[dcnt] = coord;
+      ctrloc[dcnt] = floor(coord);
+      //printf("coord:%lf, ctrloc:%li\n ", coord, ctrloc[dcnt]);
+      // floor of coord cannot be less than 0, ceiling of coord cannot be greater than or equal to 7.
+      // must be (0<= coord <=7)
+    }
+    // convert ND coordinates into a 1D array index
+    for (int dcnt=0; dcnt<NumDims; dcnt++) {
+      orgdex += ctrloc[dcnt]*Strides[dcnt];// darn, we'll have to do this for EVERY index.
+    }
+    // get 1D indexes of neighboring corners
+    for (int pcnt=0; pcnt<NumCorners; pcnt++) {
+      NbrDexs[pcnt] = orgdex + CornerStrides[pcnt];
+    }
+
+    /*
+    add 1 stride[dim] to each dimension of a point to get the point's neighbor in that dimension.  NOT GOOD ON EDGES.
+    */
+    double coord, offset;
+    for (int dcnt=0; dcnt<NumDims; dcnt++) {
+      // generate dim * 2 array  here
+      //coord = ctrpoint->at(dcnt);// ctrpoint is already mapped to array index space
+      offset = ctrpoint_mapped[dcnt] - ctrloc[dcnt];// ctrpoint is assumed to be already mapped to array index space
+      weights[dcnt][0] = 1.0 - offset; weights[dcnt][1] = offset;
+    }
+    double NbrVal;
+    PointVal = 0.0;
+
+    for (int pcnt=0; pcnt<NumCorners; pcnt++) {
+      // this first loop hits every corner of the hypercube
+      NbrDex = NbrDexs[pcnt];
+      if (NbrDex>=this->NumCells){
+        printf("Error! NbrDex[%li] is too big for NumCells[%li]. ", NbrDex, NumCells);
+        throw 1234;
+      }
+      NbrVal = Space[NbrDex];
+      //NbrVal = Space[NbrDexs[pcnt]];
+      //printf("NbrDex:%li, NbrVal:%lf, ", NbrDex, NbrVal); printf("\n");
+      // create weights for this PointVal
+      for (int dcnt=0; dcnt<NumDims; dcnt++) {
+        bitoffset = (pcnt >> dcnt) & 0x1;
+        NbrVal *= weights[dcnt][bitoffset];
+        //printf("weights[dcnt][bitoffset]:%lf, dcnt:%li, bitoffset:%li ", weights[dcnt][bitoffset], dcnt, bitoffset);
+        //printf("\n");
+      }
+      PointVal += NbrVal;
+    }
+    // here, PointVal is the final altitude answer.
+    return PointVal;
   }
   /* ********************************************************************** */
   double Eval(NumVecPtr invec) override {
     int vecsiz = invec->size();
-    uint32_t mincomp = NumDims<vecsiz?NumDims:vecsiz;// only compare to the smallest dimensions
     return Map_To_Grid(invec);
   }
   /* ********************************************************************** */
@@ -209,23 +279,30 @@ public:
     return PointVal;
   }
   /* ********************************************************************** */
-  void Map_To_GridX(std::vector<double> *ctrpoint) {
-    // ctrpoint is -1 to +1 space, map to 0 to 8 space
-    std::vector<uint32_t> ctrloc;
-    uint32_t orgint;
-
-    for (int dcnt=0; dcnt<NumDims; dcnt++) {
-      double coord = ctrpoint->at(dcnt);
-      coord = (coord + 1.0)/2.0;
-      coord = Fudge + (coord * (SubRez-DoubleFudge));//coord = coord * 7.0; // 8;
-
-      // coord = Fudge + ( (coord + 1.0) * 0.5 * (SubRez-DoubleFudge));//coord = coord * 7.0; // 8;
-
-      orgint = floor(coord);
-      // floor of coord cannot be less than 0, ceiling of coord cannot be greater than or equal to 7.
-      // must be (0<= coord <=7)
-      ctrloc.at(dcnt) = orgint;
+  void Create_Sigmoid_Deriv_Surface() {
+    // only works with 2d fun surf
+    int LastDim = this->NumDims-1;
+    double fireval, corrval, sigval;
+    double slope = 1.0/(double)this->NumDims;
+    uint32_t dimdex, rem;
+    int dex;
+    for (int firecnt=0; firecnt<this->Rez; firecnt++) {
+      int base = Strides[1]*firecnt;
+      fireval = ( ((double)firecnt)/((double)LastRez)*2.0-1.0 );
+      sigval = sigmoid_deriv_postfire(fireval);
+      for (int corrcnt=0; corrcnt<this->Rez; corrcnt++) {
+        dex = base + corrcnt;
+        corrval = ( ((double)corrcnt)/((double)LastRez)*2.0-1.0 );
+        // to do: map firecnt and corrcnt to -1.0 to +1.0 range
+        this->Space[dex] = sigval * corrval;
+      }
     }
+  }
+  /* *************************************************************************************************** */
+  static double sigmoid_deriv_postfire(double Value) {
+    double MovedValue = (1.0+Value)/2.0;// first map range -1 ... +1 to 0 ... +1
+    double retval = 2.0 * MovedValue * (1.0-MovedValue);// APPROXIMATE post sym sigmoid deriv (from fire value after actfun):
+    return retval;
   }
 };
 

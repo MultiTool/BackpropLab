@@ -62,6 +62,14 @@ public:
     }
   }
   /* ********************************************************************** */
+  void Attach_FunSurf(FunSurfGridPtr fsurf0) {
+    NodePtr ndp;
+    for (int ncnt=0; ncnt<this->NodeList.size(); ncnt++) {
+      ndp = this->NodeList.at(ncnt);
+      ndp->Attach_FunSurf(fsurf0);
+    }
+  }
+  /* ********************************************************************** */
   void Push_Fire() {
     NodePtr ndp;
     int cnt;
@@ -123,7 +131,7 @@ public:
   void Print_Me(int ClusterNum) {
     size_t cnt;
     NodePtr ndp;
-    printf("\n\n");
+    //printf("\n");
     printf(" **********************************\n");
     printf(" Cluster ClusterNum:%li, this:%p, ", ClusterNum, this);
     size_t siz = this->NodeList.size();
@@ -132,6 +140,7 @@ public:
       ndp = this->NodeList.at(cnt);
       ndp->Print_Me();
     }
+    printf("\n");
   }
 };
 

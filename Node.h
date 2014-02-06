@@ -60,6 +60,7 @@ public:
   double Corrector;
   double LRate;
   double MinCorr, MaxCorr;
+  FunSurfGridPtr fsurf;
   /* ********************************************************************** */
   Node() {
     this->FireVal = ((frand()*2.0)-1.0)*0.001;
@@ -67,15 +68,22 @@ public:
     MinCorr = INT32_MAX;
     MaxCorr = INT32_MIN;
     this->LRate = 0.0;
+//    this->fsurf = new FunSurfGrid(2, 4);
+//    this->fsurf->Create_Sigmoid_Deriv_Surface();
   }
   /* ********************************************************************** */
   ~Node() {
+    //delete this->fsurf;
     int cnt;
     for (cnt=0; cnt<this->Working_Ins.size(); cnt++) {
       delete this->Working_Ins.at(cnt);
     }
     this->Working_Ins.clear();// probably not necessary
     this->Working_Outs.clear();
+  }
+  /* ********************************************************************** */
+  void Attach_FunSurf(FunSurfGridPtr fsurf0) {
+    this->fsurf = fsurf0;
   }
   /* ********************************************************************** */
   void Collect_And_Fire() {
@@ -120,6 +128,7 @@ public:
     double ClipRad = 20.0;
     LinkPtr downs;
     double Corr, TestCorr;
+    double SurfParams[2];
     double MyFire=this->FireVal;
     double Fire_Deriv = 0.0;
     //double Fire_Deriv = sigmoid_deriv_postfire(MyFire)/16.0;
@@ -133,7 +142,7 @@ public:
       //Corr += Fire_Deriv * downs->GetCorrector();
       TestCorr += downs->GetCorrector();
     }
-    switch (2) {
+    switch (3) {
     case 0:
       Fire_Deriv = sigmoid_deriv_postfire(MyFire)/2.0;
       this->Corrector = Fire_Deriv * Corr;
@@ -157,8 +166,15 @@ public:
       //this->Corrector = Fire_Deriv * ActFun(Corr*8.0); // compress to a small range
       //this->Corrector = Fire_Deriv * ActFun(Corr*8.0); // compress to a small range
       //this->Corrector = Fire_Deriv * ActFun(Corr*1.5); // compress to a small range
-      this->Corrector = Fire_Deriv * 1.37*ActFun(Corr/1.0); // compress to a small range, network 25 wide by 100 deep
+      //this->Corrector = Fire_Deriv * 1.37*ActFun(Corr/1.0); // compress to a small range, network 25 wide by 100 deep
       //this->Corrector = Fire_Deriv * 1.5*ActFun(Corr/1.0); // compress to a small range, network 25 wide by 100 deep
+      this->Corrector = Fire_Deriv * 4.0*ActFun(Corr/4.0); // compress to a small range, network 25 wide by 100 deep
+      break;
+    case 3:
+      SurfParams[0] = ActFun(Corr/4.0);
+      SurfParams[1] = MyFire;
+      this->Corrector = this->fsurf->Eval(SurfParams);
+      this->Corrector *= 4.0;
       break;
     }
 
