@@ -128,6 +128,16 @@ public:
     }
   }
   /* ********************************************************************** */
+  void Randomize_Weights() {
+    NodePtr ndp;
+    size_t cnt;
+    size_t siz = this->NodeList.size();
+    for (cnt=0; cnt<siz; cnt++) {
+      ndp = this->NodeList.at(cnt);
+      ndp->Randomize_Weights();
+    }
+  }
+  /* ********************************************************************** */
   void Print_Me(int ClusterNum) {
     size_t cnt;
     NodePtr ndp;

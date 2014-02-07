@@ -34,7 +34,7 @@ public:
   Link() {
     this->FireVal=0.0;
     this->USNode=NULL; this->DSNode=NULL;
-    this->Weight = (frand()-0.5) * WeightAmp;// to do: do this with a distribution change
+    Randomize_Weight();
   }
   ~Link() {
     bool nop = true;
@@ -44,6 +44,9 @@ public:
   }
   inline double GetCorrector() {
     return this->Corrector*this->Weight;
+  }
+  void Randomize_Weight(){
+    this->Weight = (frand()-0.5) * WeightAmp;// to do: do this with a distribution change
   }
   void Print_Me() {
     printf("  Link ");
@@ -225,6 +228,15 @@ public:
   void ConnectIn(NodePtr other) {// attach upstream node to me
     LinkPtr ln = new Link();
     ConnectIn(other, ln);
+  }
+  /* ********************************************************************** */
+  void Randomize_Weights() {
+    LinkPtr ups;
+    size_t siz = this->Working_Ins.size();
+    for (int cnt=0; cnt<siz; cnt++) {
+      ups = this->Working_Ins.at(cnt);
+      ups->Randomize_Weight();
+    }
   }
   /* ********************************************************************** */
   void ConnectIn(NodePtr other, LinkPtr ln) {// attach upstream node to me

@@ -112,6 +112,16 @@ public:
     }
   }
   /* ********************************************************************** */
+  void Randomize_Weights() {
+    ClusterPtr clnow;
+    size_t lcnt;
+    size_t siz = this->Layers.size();
+    for (lcnt=0; lcnt<siz; lcnt++) {
+      clnow = Layers.at(lcnt);
+      clnow->Randomize_Weights();
+    }
+  }
+  /* ********************************************************************** */
   void Print_Me() {
     size_t cnt;
     ClusterPtr cluster;

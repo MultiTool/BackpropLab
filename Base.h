@@ -52,7 +52,8 @@ using namespace __gnu_cxx;
 
 // #define Fudge (0.0000000000000000000001) // DBL_EPSILON  ?
 //#define Fudge (DBL_EPSILON*2)
-#define Fudge (2.01e-015) // like epsilon, but epsilon tends to disappear during some math operations
+//#define Fudge (2.01e-015) // like epsilon, but epsilon tends to disappear during some math operations
+#define Fudge (2.01e-010) // like epsilon, but epsilon tends to disappear during some math operations
 
 //#ifndef override
 //#define override

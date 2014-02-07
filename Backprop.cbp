@@ -35,7 +35,10 @@
 		<Unit filename="Base.h" />
 		<Unit filename="Cluster.h" />
 		<Unit filename="FunSurf.h" />
+		<Unit filename="Lugar.h" />
 		<Unit filename="Node.h" />
+		<Unit filename="Org.h" />
+		<Unit filename="Pop.h" />
 		<Unit filename="Stack.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>

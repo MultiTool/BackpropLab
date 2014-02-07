@@ -5,19 +5,9 @@
 #include "Node.h"
 #include "Cluster.h"
 #include "Stack.h"
+#include "Pop.h"
 
 using namespace std;
-
-inline double TransBit(int val, int bitnum) {
-  return ((double)((val >> bitnum)&0x1)) * 2.0 - 1.0;
-}
-
-inline double TransInt(int val) {
-  return ((double)val) * 2.0 - 1.0;
-}
-inline uint32_t Bit2Int(int val, int bitnum) {
-  return ((val >> bitnum)&0x1);
-}
 
 /*
 next
@@ -84,6 +74,11 @@ int main() {
   cout << "Hello world!" << endl;
   srand(time(NULL));
 
+  if (true) {
+    Pop pop;
+    pop.Gen();
+    return 0;
+  }
   double goal;
   Stack stk;
   stk.Create_Simple();
@@ -93,11 +88,11 @@ int main() {
   stk.Attach_FunSurf(&fs);
 
   for (int gcnt=0; gcnt<numgens; gcnt++) {
-    num0 = Bit2Int(gcnt, 0);
-    num1 = Bit2Int(gcnt, 1);
-    in0 = TransInt(num0);
-    in1 = TransInt(num1);// in0 = TransBit(gcnt, 0); in1 = TransBit(gcnt, 1);
-    goal = TransInt(num0 ^ num1);
+    num0 = Pop::Bit2Int(gcnt, 0);
+    num1 = Pop::Bit2Int(gcnt, 1);
+    in0 = Pop::TransInt(num0);
+    in1 = Pop::TransInt(num1);// in0 = TransBit(gcnt, 0); in1 = TransBit(gcnt, 1);
+    goal = Pop::TransInt(num0 ^ num1);
     stk.Load_Inputs(in0, in1, 1.0);
     stk.Fire_Gen();
     double fire = stk.OutLayer->NodeList.at(0)->FireVal;
