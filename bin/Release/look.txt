@@ -1,0 +1,32 @@
+Hello world!
+gcnt:995, in0:1.000000, in1:1.000000, goal:-1.000000, fire:-0.925413, delta:-0.074587, Success!
+gcnt:996, in0:-1.000000, in1:-1.000000, goal:-1.000000, fire:-0.736598, delta:-0.263402, Success!
+gcnt:997, in0:1.000000, in1:-1.000000, goal:1.000000, fire:0.927354, delta:0.072646, Success!
+gcnt:998, in0:-1.000000, in1:1.000000, goal:1.000000, fire:0.925978, delta:0.074022, Success!
+gcnt:999, in0:1.000000, in1:1.000000, goal:-1.000000, fire:-0.925653, delta:-0.074347, Success!
+
+Space (NumCells=16):
+
+  -0.00000,   -0.00000,    0.00000,    0.00000, 
+  -0.44444,   -0.14815,    0.14815,    0.44444, 
+  -0.44444,   -0.14815,    0.14815,    0.44444, 
+  -0.00000,   -0.00000,    0.00000,    0.00000, 
+
+ Stack this:0x7fff62c91e20,  num Clusters:3
+ **********************************
+ Cluster ClusterNum:0, this:0x157c010,  num nodes:3
+ Node FireVal:1.000000, MinCorr:-0.162075, MaxCorr:0.232805, LRate:0.500000, this:0x157c060,  numlinks:0
+ Node FireVal:1.000000, MinCorr:-0.244919, MaxCorr:0.216762, LRate:0.500000, this:0x157c0e0,  numlinks:0
+ Node FireVal:1.000000, MinCorr:-0.383343, MaxCorr:0.200703, LRate:0.500000, this:0x157c160,  numlinks:0
+
+ **********************************
+ Cluster ClusterNum:1, this:0x157c200,  num nodes:2
+ Node FireVal:0.506858, MinCorr:-11.229404, MaxCorr:9.367963, LRate:0.500000, this:0x157c250,  numlinks:3
+ Node FireVal:0.940353, MinCorr:-8.677787, MaxCorr:11.322312, LRate:0.500000, this:0x157c2d0,  numlinks:3
+
+ **********************************
+ Cluster ClusterNum:2, this:0x157c570,  num nodes:1
+ Node FireVal:-0.925653, MinCorr:2147483647.000000, MaxCorr:-2147483648.000000, LRate:0.500000, this:0x157c5a0,  numlinks:2
+
+
+numgens:1000, finalfail:380

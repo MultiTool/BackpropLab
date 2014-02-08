@@ -148,6 +148,7 @@ public:
       this->Run_Test(candidate);
       printf("candidate->Score:%lf, %lf\n", candidate->Score[0], candidate->Score[1]);
     }
+    this->Sort();
     /*
     place holder
     first we need to score and sort the parents, then we create children
@@ -165,8 +166,8 @@ public:
     }
   }
   /* ********************************************************************** */
-  static bool AscendingScore(Org* b0, Org* b1) {
-    return (b0->Score < b1->Score);
+  static bool AscendingScore(OrgPtr b0, OrgPtr b1) {
+    return b0->Compare_Score(b1) > 0;
   }
   void Sort() {
     LugarVec forestv_unref = this->forestv;
@@ -176,6 +177,14 @@ public:
       ScoreDexv[cnt] = forestv_unref[cnt]->tenant;
     }
     std::sort (ScoreDexv.begin(), ScoreDexv.end(), AscendingScore);
+  }
+  /* ********************************************************************** */
+  void Print_Sorted_Scores(){
+    size_t siz = ScoreDexv.size();
+    int cnt;
+    for (cnt=0; cnt<siz; cnt++) {
+      ScoreDexv[cnt]->Print_Score();
+    }
   }
   /* ********************************************************************** */
   void Mutate() {

@@ -77,6 +77,7 @@ int main() {
   if (true) {
     Pop pop;
     pop.Gen();
+    pop.Print_Sorted_Scores();
     return 0;
   }
   double goal;

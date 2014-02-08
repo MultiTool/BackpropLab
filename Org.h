@@ -83,12 +83,18 @@ public:
     printf("Org\n");
   }
   /* ********************************************************************** */
+  void Print_Score() {
+    printf(" Score:%lf, %lf\n", this->Score[0], this->Score[1]);
+  }
+  /* ********************************************************************** */
   int Compare_Score(OrgPtr other) {
     //double left, right;
     int cnt = 0;
+    double *ScoreMe, *ScoreYou;
+    ScoreMe=this->Score; ScoreYou=other->Score;
     while (cnt<NumScores) {
-      if (this->Score[cnt]>other->Score[cnt]) {return 1;}
-      if (this->Score[cnt]<other->Score[cnt]) {return -1;}
+      if (ScoreMe[cnt]<ScoreYou[cnt]) {return 1;}
+      if (ScoreMe[cnt]>ScoreYou[cnt]) {return -1;}
       cnt++;
     }
     return 0;
