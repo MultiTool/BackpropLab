@@ -31,8 +31,38 @@ put sig deriv function at base of dependencies. meh, doesn't belong at base.
 need a quick translation from dimdex backward to real function input coord.
 
 */
+/* ********************************************************************** */
+void Test_Overflow() {
+  uint32_t siz = 100;
+  double ray[siz];
+  double sum = 0.0;
+  for (int cnt=0; cnt<siz; cnt++) {
+    sum += ray[cnt] = frand();
+  }
+  for (int cnt=0; cnt<siz; cnt++) {
+    //ray[cnt] /= sum;
+    ray[cnt] = 0.5;
+  }
+  int hitcnt = 0;
+  double val;
+  double KarmaSlush = 0.0;
+  for (int cnt=0; cnt<siz; cnt++) {
+    val = ray[cnt] + KarmaSlush;
+    if (val<0) {val+=1.0;}
+    if (frand()<val) {
+      KarmaSlush -= 1.0 - val;
+      hitcnt++;
+    } else {
+      KarmaSlush += val;
+    }
+    printf("hitcnt:%li\n",hitcnt);
+  }
+}
+/* ********************************************************************** */
 const uint32_t ndims = 2;
 int main() {
+  srand(time(NULL));
+  Test_Overflow(); return 0;
   if (false) {
     double alt;
     NumVec nv;
@@ -72,7 +102,6 @@ int main() {
   uint32_t num0, num1;
   double in0, in1;
   cout << "Hello world!" << endl;
-  srand(time(NULL));
 
   if (true) {
     Pop pop;
