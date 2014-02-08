@@ -54,7 +54,13 @@ public:
   /* ********************************************************************** */
   OrgPtr Spawn() {
     OrgPtr child;
-    child = new Org();
+    uint32_t siz = this->NumCells;
+    child = new Org(this->NumDims, this->Rez);
+    child->Score = 0.0;
+    uint32_t cnt;
+    for (cnt=0;cnt<siz;cnt++) {
+      child->Space[cnt] = this->Space[cnt];
+    }
     return child;
   }
   /* ********************************************************************** */
