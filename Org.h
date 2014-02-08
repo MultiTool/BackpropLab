@@ -12,21 +12,24 @@ typedef Org *OrgPtr;
 typedef std::vector<OrgPtr> OrgVec;
 class Org : public FunSurfGrid {
 public:
-  double Score;
+  const static int NumScores = 2;
+  double Score[NumScores];
   struct Lugar *home;// my location
 #ifdef Nested
   FunSurfGridPtr FSurf;
 #endif
   /* ********************************************************************** */
   Org() : Org(2, 4) {
-    this->Score = 0.0;
-    this->home = NULL;
 #ifdef Nested
     FSurf = new FunSurfGrid(2, 4);
 #endif
   }
   /* ********************************************************************** */
   Org(uint32_t NumDims0, uint32_t Rez0) : FunSurfGrid(NumDims0, Rez0) {
+    for (int cnt=0; cnt<NumScores; cnt++) {
+      this->Score[cnt] = 0.0;
+    }
+    this->home = NULL;
   }
   /* ********************************************************************** */
   ~Org() {
@@ -37,9 +40,19 @@ public:
   /* ********************************************************************** */
   static OrgPtr Abiogenate() {
     OrgPtr org = new Org();
-    org->Mutate_Me();
+    org->Rand_Init();
     org->Create_Sigmoid_Deriv_Surface();// snox for testing
     return org;
+  }
+  /* ********************************************************************** */
+  void Rand_Init() {
+    double MutAmp = 0.01;
+    double HalfAmp = MutAmp/2.0;
+    uint32_t siz = this->NumCells;
+    uint32_t cnt;
+    for (cnt=0; cnt<siz; cnt++) {
+      Space[cnt] = frand()*MutAmp-HalfAmp;
+    }
   }
   /* ********************************************************************** */
   void Mutate_Me() {
@@ -47,7 +60,7 @@ public:
     double HalfAmp = MutAmp/2.0;
     uint32_t siz = this->NumCells;
     uint32_t cnt;
-    for (cnt=0;cnt<siz;cnt++){
+    for (cnt=0; cnt<siz; cnt++) {
       Space[cnt] += frand()*MutAmp-HalfAmp;
     }
   }
@@ -56,9 +69,8 @@ public:
     OrgPtr child;
     uint32_t siz = this->NumCells;
     child = new Org(this->NumDims, this->Rez);
-    child->Score = 0.0;
     uint32_t cnt;
-    for (cnt=0;cnt<siz;cnt++) {
+    for (cnt=0; cnt<siz; cnt++) {
       child->Space[cnt] = this->Space[cnt];
     }
     return child;
@@ -69,6 +81,17 @@ public:
   /* ********************************************************************** */
   void Print_Me() {
     printf("Org\n");
+  }
+  /* ********************************************************************** */
+  int Compare_Score(OrgPtr other) {
+    //double left, right;
+    int cnt = 0;
+    while (cnt<NumScores) {
+      if (this->Score[cnt]>other->Score[cnt]) {return 1;}
+      if (this->Score[cnt]<other->Score[cnt]) {return -1;}
+      cnt++;
+    }
+    return 0;
   }
 };
 

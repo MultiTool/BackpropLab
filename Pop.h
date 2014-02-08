@@ -32,10 +32,12 @@ public:
     int pcnt;
     BPNet->Create_Simple();
     this->popsz = popsize;
-    forestv.resize(popsize); ScoreDexv.resize(popsize);
+    forestv.resize(popsize);
+    ScoreDexv.resize(popsize);
     for (pcnt=0; pcnt<popsize; pcnt++) {
       lugar = new Lugar();
-      org = Org::Abiogenate(); lugar->Attach_Tenant(org);
+      org = Org::Abiogenate();
+      lugar->Attach_Tenant(org);
       forestv.at(pcnt) = lugar;
       ScoreDexv.at(pcnt) = org;
     }
@@ -58,8 +60,10 @@ public:
     double WinCnt;
     WinCnt=0.0;
     for (GenCnt=0; GenCnt<MaxGens; GenCnt++) {
-      num0 = Bit2Int(GenCnt, 0); num1 = Bit2Int(GenCnt, 1);
-      in0 = TransInt(num0); in1 = TransInt(num1);
+      num0 = Bit2Int(GenCnt, 0);
+      num1 = Bit2Int(GenCnt, 1);
+      in0 = TransInt(num0);
+      in1 = TransInt(num1);
       goal = TransInt(num0 ^ num1);
       BPNet->Load_Inputs(in0, in1, 1.0);
       BPNet->Fire_Gen();
@@ -77,11 +81,15 @@ public:
     uint32_t num0, num1;
     double in0, in1;
     double goal;
-    BPNet->Randomize_Weights();
-    double ScoreBefore = Dry_Run_Test(16);
+    double ScoreBefore;
+    do {
+      BPNet->Randomize_Weights();
+      ScoreBefore = Dry_Run_Test(16);
+    } while (ScoreBefore==1.0);
     BPNet->Attach_FunSurf(FSurf);
     double WinCnt, LoseCnt;
-    WinCnt=0.0; LoseCnt=0.0;
+    WinCnt=0.0;
+    LoseCnt=0.0;
     for (GenCnt=0; GenCnt<MaxGens; GenCnt++) {
       num0 = Bit2Int(GenCnt, 0);
       num1 = Bit2Int(GenCnt, 1);
@@ -97,11 +105,14 @@ public:
         LoseCnt++;
         FinalFail = GenCnt;
       }
-      if ((GenCnt-FinalFail)>DoneThresh) { break; }
+      if ((GenCnt-FinalFail)>DoneThresh) {
+        break;
+      }
       BPNet->Backprop(goal);
     }
+    FSurf->Score[0] = 1.0 - ( ((double)FinalFail)/(double)MaxGens );
     double Remainder = MaxGens-GenCnt;
-    FSurf->Score = ( (WinCnt+Remainder)/((double)MaxGens) ) - ScoreBefore;
+    FSurf->Score[1] = ( (WinCnt+Remainder)/((double)MaxGens) ) - ScoreBefore;
     /*
     how should we score?
     1. to save time, if an org wins X times in a row, the testing ends.
@@ -114,8 +125,10 @@ public:
     if (true) {
       printf("\n");
       if (false) {
-        FSurf->Print_Me(); printf("\n\n");
-        BPNet->Print_Me(); printf("\n");
+        FSurf->Print_Me();
+        printf("\n\n");
+        BPNet->Print_Me();
+        printf("\n");
       }
       printf("numgens:%li, FinalFail:%li\n", MaxGens, FinalFail);
     }
@@ -133,7 +146,7 @@ public:
       lugar = forestv[pcnt];
       candidate = lugar->tenant;
       this->Run_Test(candidate);
-      printf("candidate->Score:%lf\n", candidate->Score);
+      printf("candidate->Score:%lf, %lf\n", candidate->Score[0], candidate->Score[1]);
     }
     /*
     place holder
@@ -195,3 +208,4 @@ public:
 };
 
 #endif // POP_H_INCLUDED
+
