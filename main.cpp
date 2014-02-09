@@ -38,7 +38,7 @@ void Test_Overflow() {
   double sum = 0.0;
   for (int cnt=0; cnt<siz; cnt++) {
     //sum += ray[cnt] = frand();
-    sum += ray[cnt] = cnt;
+    sum += ray[cnt] = siz-cnt;
   }
   double sum1 = 0;
   for (int cnt=0; cnt<siz; cnt++) {
