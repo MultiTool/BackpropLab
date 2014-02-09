@@ -144,11 +144,23 @@ public:
     Sort();
     OrgPtr bestbeast = ScoreDexv[0];
     OrgPtr leastbeast = ScoreDexv[this->popsz-2];
+    double avgbeast = AvgBeast();
     bestbeast->Print_Me(); printf("\n");
     printf("bestbeast->Score:%lf, %lf\n", bestbeast->Score[0], bestbeast->Score[1]);
+    printf("avgbeast Score:%lf\n", avgbeast);
     printf("leastbeast->Score:%lf, %lf\n", leastbeast->Score[0], leastbeast->Score[1]);
     Birth_And_Death(SurvivalRate);
     Mutate(0.8, 0.8);
+  }
+  /* ********************************************************************** */
+  double AvgBeast() {
+    size_t siz = ScoreDexv.size();
+    double sum = 0.0;
+    for (int cnt=0; cnt<siz; cnt++) {
+      sum += ScoreDexv[cnt]->Score[0];
+    }
+    sum /= (double)siz;
+    return sum;
   }
   /* ********************************************************************** */
   static bool AscendingScore(OrgPtr b0, OrgPtr b1) {
@@ -182,7 +194,8 @@ public:
       delete doomed;
       child = ScoreDexv[topcnt]->Spawn();
       home->Attach_Tenant(child); ScoreDexv[cnt] = child;
-      topcnt++; if (topcnt>=NumSurvivors) {topcnt=0;}
+      topcnt++;
+      if (topcnt>=NumSurvivors) {topcnt=0;}
     }
   }
   /* ********************************************************************** */
