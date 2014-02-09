@@ -169,6 +169,9 @@ public:
   static bool AscendingScore(OrgPtr b0, OrgPtr b1) {
     return b0->Compare_Score(b1) > 0;
   }
+  static bool DescendingScore(OrgPtr b0, OrgPtr b1) {
+    return b1->Compare_Score(b0) > 0;
+  }
   void Sort() {
     LugarVec forestv_unref = this->forestv;
     size_t siz = forestv_unref.size();
@@ -176,10 +179,31 @@ public:
     for (cnt=0; cnt<siz; cnt++) {
       ScoreDexv[cnt] = forestv_unref[cnt]->tenant;
     }
-    std::sort (ScoreDexv.begin(), ScoreDexv.end(), AscendingScore);
+    std::random_shuffle(ScoreDexv.begin(), ScoreDexv.end());
+    // std::sort (ScoreDexv.begin(), ScoreDexv.end(), AscendingScore);
+    std::sort (ScoreDexv.begin(), ScoreDexv.end(), DescendingScore);
   }
   /* ********************************************************************** */
-  void Print_Sorted_Scores(){
+  void Glean() {
+    Sort();
+    size_t siz = ScoreDexv.size();
+    int NumSurvivors = siz / 2;
+    int topcnt, cnt;
+    topcnt = 0;
+    for (cnt=NumSurvivors; cnt<siz; cnt++) {
+      delete ScoreDexv[cnt];
+      ScoreDexv[cnt] = ScoreDexv[topcnt]->Spawn();
+      topcnt++; if (topcnt>=NumSurvivors) {topcnt=0;}
+    }
+
+    LugarVec forestv_unref = this->forestv;
+    siz = forestv_unref.size();
+    for (cnt=0; cnt<siz; cnt++) {
+      forestv_unref[cnt]->tenant = ScoreDexv[cnt];
+    }
+  }
+  /* ********************************************************************** */
+  void Print_Sorted_Scores() {
     size_t siz = ScoreDexv.size();
     int cnt;
     for (cnt=0; cnt<siz; cnt++) {
