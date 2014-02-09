@@ -8,6 +8,7 @@ class Lugar;
 typedef Lugar *LugarPtr;
 typedef std::vector<LugarPtr> LugarVec;
 class Lugar {
+// private:
 public:
   Org *tenant;
   Org *tenant_next;

@@ -72,7 +72,7 @@ void Test_Overflow() {
 const uint32_t ndims = 2;
 int main() {
   srand(time(NULL));
-  Test_Overflow(); return 0;
+  // Test_Overflow(); return 0;
   if (false) {
     double alt;
     NumVec nv;
@@ -115,7 +115,10 @@ int main() {
 
   if (true) {
     Pop pop;
-    pop.Gen();
+    for (int cnt=0; cnt<1000; cnt++) {
+      pop.Gen();
+      // pop.Print_Sorted_Scores();
+    }
     pop.Print_Sorted_Scores();
     return 0;
   }

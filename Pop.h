@@ -9,7 +9,8 @@
 #include "Cluster.h"
 #include "Stack.h"
 
-#define popmax 1000
+//#define popmax 1000
+#define popmax 100
 //#define popmax 10
 
 /* ********************************************************************** */
@@ -86,10 +87,10 @@ public:
       BPNet->Randomize_Weights();
       ScoreBefore = Dry_Run_Test(16);
     } while (ScoreBefore==1.0);
+    FSurf->Score[0]=0.0; FSurf->Score[1]=0.0;
     BPNet->Attach_FunSurf(FSurf);
-    double WinCnt, LoseCnt;
+    double WinCnt;
     WinCnt=0.0;
-    LoseCnt=0.0;
     for (GenCnt=0; GenCnt<MaxGens; GenCnt++) {
       num0 = Bit2Int(GenCnt, 0);
       num1 = Bit2Int(GenCnt, 1);
@@ -102,7 +103,6 @@ public:
       if (goal*fire>0) {
         WinCnt++;
       } else {
-        LoseCnt++;
         FinalFail = GenCnt;
       }
       if ((GenCnt-FinalFail)>DoneThresh) {
@@ -113,16 +113,7 @@ public:
     FSurf->Score[0] = 1.0 - ( ((double)FinalFail)/(double)MaxGens );
     double Remainder = MaxGens-GenCnt;
     FSurf->Score[1] = ( (WinCnt+Remainder)/((double)MaxGens) ) - ScoreBefore;
-    /*
-    how should we score?
-    1. to save time, if an org wins X times in a row, the testing ends.
-    2. ratio of wins/Total should be scored against a baseline of wins/Total from before training. ratio? subtraction? (ScoreAfter/ScoreBefore)?
-    3. if ScoreAfter just a ratio over history, then it rewards early success as well as average success.
-    4. the only problem is if we quit early. then average success is cut short. just averge in a filler 1.0/1.0 for the remainder.
-    (WinCnt+remainder)/(Total+remainder)
-
-    */
-    if (true) {
+    if (false) {
       printf("\n");
       if (false) {
         FSurf->Print_Me();
@@ -146,23 +137,26 @@ public:
       lugar = forestv[pcnt];
       candidate = lugar->tenant;
       this->Run_Test(candidate);
-      printf("candidate->Score:%lf, %lf\n", candidate->Score[0], candidate->Score[1]);
+      // printf("candidate->Score:%lf, %lf\n", candidate->Score[0], candidate->Score[1]);
     }
-    this->Sort();
-    /*
-    place holder
-    first we need to score and sort the parents, then we create children
-    */
-    // LugarVec forestv_unref = this->forestv;
-    for (pcnt=0; pcnt<popsize; pcnt++) {
-      lugar = forestv[pcnt];
-      parent = lugar->tenant;
-      child = parent->Spawn();
-      lugar->Attach_Next_Tenant(child);
-    }
-    for (pcnt=0; pcnt<popsize; pcnt++) {// delete the parents and replace them.
-      lugar = forestv[pcnt];
-      lugar->Rollover_Tenant();
+    Birth_And_Death();
+    OrgPtr bestbeast = ScoreDexv[0];
+    bestbeast->Print_Me(); printf("\n");
+    printf("bestbeast->Score:%lf, %lf\n", bestbeast->Score[0], bestbeast->Score[1]);
+    Mutate(0.8, 0.8);
+    if (false) {
+      this->Sort();
+      // LugarVec forestv_unref = this->forestv;
+      for (pcnt=0; pcnt<popsize; pcnt++) {
+        lugar = forestv[pcnt];
+        parent = lugar->tenant;
+        child = parent->Spawn();
+        lugar->Attach_Next_Tenant(child);
+      }
+      for (pcnt=0; pcnt<popsize; pcnt++) {// delete the parents and replace them.
+        lugar = forestv[pcnt];
+        lugar->Rollover_Tenant();
+      }
     }
   }
   /* ********************************************************************** */
@@ -184,7 +178,7 @@ public:
     std::sort (ScoreDexv.begin(), ScoreDexv.end(), DescendingScore);
   }
   /* ********************************************************************** */
-  void Glean() {
+  void Birth_And_Death() {
     Sort();
     size_t siz = ScoreDexv.size();
     size_t NumSurvivors = siz / 2;
@@ -209,12 +203,14 @@ public:
     }
   }
   /* ********************************************************************** */
-  void Mutate() {
+  void Mutate(double Pop_MRate, double Org_MRate) {
     size_t siz = this->forestv.size();
     for (int cnt=0; cnt<siz; cnt++) {
-      LugarPtr lugar = this->forestv.at(cnt);
-      OrgPtr org = lugar->tenant;
-      org->Mutate_Me();
+      if (frand()<Pop_MRate) {
+        LugarPtr lugar = this->forestv.at(cnt);
+        OrgPtr org = lugar->tenant;
+        org->Mutate_Me(Org_MRate);
+      }
     }
   }
   /* ********************************************************************** */

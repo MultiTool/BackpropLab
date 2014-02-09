@@ -41,7 +41,9 @@ public:
   static OrgPtr Abiogenate() {
     OrgPtr org = new Org();
     org->Rand_Init();
-    org->Create_Sigmoid_Deriv_Surface();// snox for testing
+    if(false) {
+      org->Create_Sigmoid_Deriv_Surface();// snox for testing
+    }
     return org;
   }
   /* ********************************************************************** */
@@ -55,13 +57,15 @@ public:
     }
   }
   /* ********************************************************************** */
-  void Mutate_Me() {
+  void Mutate_Me(double MRate) {
     double MutAmp = 0.01;
     double HalfAmp = MutAmp/2.0;
     uint32_t siz = this->NumCells;
     uint32_t cnt;
     for (cnt=0; cnt<siz; cnt++) {
-      Space[cnt] += frand()*MutAmp-HalfAmp;
+      if (frand()<MRate) {
+        Space[cnt] += frand()*MutAmp-HalfAmp;
+      }
     }
   }
   /* ********************************************************************** */
@@ -79,9 +83,9 @@ public:
   void Compile_Me() {
   }
   /* ********************************************************************** */
-  void Print_Me() {
-    printf("Org\n");
-  }
+//  void Print_Me() override {
+//    printf("Org\n");
+//  }
   /* ********************************************************************** */
   void Print_Score() {
     printf(" Score:%lf, %lf\n", this->Score[0], this->Score[1]);
