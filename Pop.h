@@ -140,10 +140,14 @@ public:
       this->Run_Test(candidate);
       // printf("candidate->Score:%lf, %lf\n", candidate->Score[0], candidate->Score[1]);
     }
-    Birth_And_Death();
+    double SurvivalRate = 0.5;
+    Sort();
     OrgPtr bestbeast = ScoreDexv[0];
+    OrgPtr leastbeast = ScoreDexv[this->popsz-2];
     bestbeast->Print_Me(); printf("\n");
     printf("bestbeast->Score:%lf, %lf\n", bestbeast->Score[0], bestbeast->Score[1]);
+    printf("leastbeast->Score:%lf, %lf\n", leastbeast->Score[0], leastbeast->Score[1]);
+    Birth_And_Death(SurvivalRate);
     Mutate(0.8, 0.8);
   }
   /* ********************************************************************** */
@@ -165,10 +169,10 @@ public:
     std::sort (ScoreDexv.begin(), ScoreDexv.end(), DescendingScore);
   }
   /* ********************************************************************** */
-  void Birth_And_Death() {
-    Sort();
+  void Birth_And_Death(double SurvivalRate) {
+    //  Sort();
     size_t siz = ScoreDexv.size();
-    size_t NumSurvivors = siz / 2;
+    size_t NumSurvivors = siz * SurvivalRate;
     size_t topcnt, cnt;
     LugarPtr home;
     OrgPtr doomed, child;

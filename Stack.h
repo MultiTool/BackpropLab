@@ -54,7 +54,7 @@ public:
     int largo = 200;
     // largo = 1;
     largo = 10;
-    largo = 20;
+    //largo = 20;
     //largo = 30; largo = 100;
     for (int lcnt=0; lcnt<largo; lcnt++) {
       //clnow = new Cluster(4); Layers.push_back(clnow);
@@ -62,7 +62,7 @@ public:
       clnow = new Cluster(largo/4); Layers.push_back(clnow);
       clnow->Connect_Other_Cluster(clprev);
       if(true) {
-        if (lcnt<largo-10) {
+        if (lcnt<largo-5) {
           LRate = 0.5;
         } else {
           LRate = 0.0;
