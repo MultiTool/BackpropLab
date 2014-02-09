@@ -47,24 +47,26 @@ public:
   /* ********************************************************************** */
   void Create_Any_Depth() {
     ClusterPtr clprev, clnow;
-    InLayer = clnow = new Cluster(3); Layers.push_back(clnow);
-    clnow->Set_Learning_Rate(0.5);
-    clprev = clnow;
     double LRate = 0.5;
+    InLayer = clnow = new Cluster(3); Layers.push_back(clnow);
+    clnow->Set_Learning_Rate(LRate);
+    clprev = clnow;
     int largo = 200;
     // largo = 1;
     largo = 10;
-    largo = 30;
-    largo = 100;
+    largo = 20;
+    //largo = 30; largo = 100;
     for (int lcnt=0; lcnt<largo; lcnt++) {
       //clnow = new Cluster(4); Layers.push_back(clnow);
       //clnow = new Cluster(2+largo); Layers.push_back(clnow);
       clnow = new Cluster(largo/4); Layers.push_back(clnow);
       clnow->Connect_Other_Cluster(clprev);
-      if (lcnt<largo-20){
-        LRate = 0.5;
-      }else{
-        LRate = 0.0;
+      if(true) {
+        if (lcnt<largo-10) {
+          LRate = 0.5;
+        } else {
+          LRate = 0.0;
+        }
       }
       clnow->Set_Learning_Rate(LRate);
       clprev = clnow;

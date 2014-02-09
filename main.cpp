@@ -115,7 +115,8 @@ int main() {
 
   if (true) {
     Pop pop;
-    for (int cnt=0; cnt<4000; cnt++) {
+    for (int gencnt=0; gencnt<4000; gencnt++) {
+      printf("gencnt:%li, ", gencnt);
       pop.Gen();
       // pop.Print_Sorted_Scores();
     }
@@ -177,4 +178,49 @@ bestbeast->Score:1.000000, 0.500500
  Score:1.000000, 0.500000
  Score:1.000000, 0.250500
  Score:0.999500, 0.750000
+
+ gencnt:3999, Pop.Gen()
+Space (NumCells=16):
+
+   0.14489,    0.37989,    0.55461,    0.04966,
+   0.16378,    0.69230,    0.19582,    0.08316,
+  -0.02024,   -0.26089,   -0.62332,   -0.52146,
+  -0.10628,   -0.49616,   -0.48422,   -0.07547,
+bestbeast->Score:1.000000, 0.500500
+ Score:1.000000, 0.500500
+ Score:1.000000, 0.500500
+ Score:1.000000, 0.500000
+ Score:1.000000, 0.250000
+ Score:0.999500, 0.749500
+
+
+this with a depth of 10 layers, not training the last 5:
+gencnt:3999, Pop.Gen()
+Space (NumCells=16):
+
+   0.14593,    0.05171,    0.03419,    0.08996,
+  -0.01653,    0.02561,    0.17296,    0.29763,
+  -0.29288,   -0.15211,   -0.04438,    0.00766,
+  -0.02522,   -0.06223,   -0.05057,   -0.00976,
+bestbeast->Score:0.990000, 0.494500
+ Score:0.990000, 0.494500
+ Score:0.989500, 0.746000
+ Score:0.989000, 0.498000
+ Score:0.988500, 0.494500
+ Score:0.988000, 0.743500
+...
+ Score:0.783000, 0.618500 at halfway
+
+this with a depth of 10 layers, not training the last 5, but learning AND:
+gencnt:1428, Pop.Gen()
+Space (NumCells=16):
+
+   0.08946,   -0.04429,   -0.05459,    0.11731,
+   0.03244,    0.02438,   -0.01497,   -0.09420,
+   0.02056,    0.03588,   -0.05977,   -0.10679,
+   0.18926,    0.11900,   -0.08518,    0.02254,
+bestbeast->Score:0.999000, 0.250000
+gencnt:1429, Pop.Gen()
+
+
 */

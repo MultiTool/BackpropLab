@@ -31,7 +31,8 @@ public:
     LugarPtr lugar;
     Org *org;
     int pcnt;
-    BPNet->Create_Simple();
+    //BPNet->Create_Simple();
+    BPNet->Create_Any_Depth();
     this->popsz = popsize;
     forestv.resize(popsize);
     ScoreDexv.resize(popsize);
@@ -66,6 +67,7 @@ public:
       in0 = TransInt(num0);
       in1 = TransInt(num1);
       goal = TransInt(num0 ^ num1);
+      //goal = TransInt(num0 & num1);
       BPNet->Load_Inputs(in0, in1, 1.0);
       BPNet->Fire_Gen();
       double fire = BPNet->OutLayer->NodeList.at(0)->FireVal;
@@ -95,6 +97,7 @@ public:
       num0 = Bit2Int(GenCnt, 0); num1 = Bit2Int(GenCnt, 1);
       in0 = TransInt(num0); in1 = TransInt(num1);
       goal = TransInt(num0 ^ num1);
+      //goal = TransInt(num0 & num1);
       BPNet->Load_Inputs(in0, in1, 1.0);
       BPNet->Fire_Gen();
       double fire = BPNet->OutLayer->NodeList.at(0)->FireVal;
@@ -142,20 +145,6 @@ public:
     bestbeast->Print_Me(); printf("\n");
     printf("bestbeast->Score:%lf, %lf\n", bestbeast->Score[0], bestbeast->Score[1]);
     Mutate(0.8, 0.8);
-    if (false) {
-      this->Sort();
-      // LugarVec forestv_unref = this->forestv;
-      for (pcnt=0; pcnt<popsize; pcnt++) {
-        lugar = forestv[pcnt];
-        parent = lugar->tenant;
-        child = parent->Spawn();
-        lugar->Attach_Next_Tenant(child);
-      }
-      for (pcnt=0; pcnt<popsize; pcnt++) {// delete the parents and replace them.
-        lugar = forestv[pcnt];
-        lugar->Rollover_Tenant();
-      }
-    }
   }
   /* ********************************************************************** */
   static bool AscendingScore(OrgPtr b0, OrgPtr b1) {
