@@ -187,19 +187,17 @@ public:
   void Glean() {
     Sort();
     size_t siz = ScoreDexv.size();
-    int NumSurvivors = siz / 2;
-    int topcnt, cnt;
+    size_t NumSurvivors = siz / 2;
+    size_t topcnt, cnt;
+    LugarPtr home;
+    OrgPtr doomed, child;
     topcnt = 0;
     for (cnt=NumSurvivors; cnt<siz; cnt++) {
-      delete ScoreDexv[cnt];
-      ScoreDexv[cnt] = ScoreDexv[topcnt]->Spawn();
+      doomed = ScoreDexv[cnt]; home = doomed->home;
+      delete doomed;
+      child = ScoreDexv[topcnt]->Spawn();
+      home->Attach_Tenant(child); ScoreDexv[cnt] = child;
       topcnt++; if (topcnt>=NumSurvivors) {topcnt=0;}
-    }
-
-    LugarVec forestv_unref = this->forestv;
-    siz = forestv_unref.size();
-    for (cnt=0; cnt<siz; cnt++) {
-      forestv_unref[cnt]->tenant = ScoreDexv[cnt];
     }
   }
   /* ********************************************************************** */
