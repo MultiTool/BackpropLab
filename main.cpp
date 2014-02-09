@@ -115,7 +115,7 @@ int main() {
 
   if (true) {
     Pop pop;
-    for (int cnt=0; cnt<1000; cnt++) {
+    for (int cnt=0; cnt<4000; cnt++) {
       pop.Gen();
       // pop.Print_Sorted_Scores();
     }
@@ -161,3 +161,20 @@ int main() {
   printf("numgens:%li, finalfail:%li\n", numgens, finalfail);
   return 0;
 }
+
+/*
+Pop.Gen()
+Space (NumCells=16):
+
+   0.01117,    0.98542,    0.58671,    0.10058,
+   0.35379,    0.70780,   -0.01187,    0.10801,
+  -0.05393,    0.03004,   -0.77475,   -0.22737,
+  -0.11991,   -0.59679,   -0.65068,   -0.10050,
+bestbeast->Score:1.000000, 0.500500
+ Score:1.000000, 0.500500
+ Score:1.000000, 0.500500
+ Score:1.000000, 0.500000
+ Score:1.000000, 0.500000
+ Score:1.000000, 0.250500
+ Score:0.999500, 0.750000
+*/

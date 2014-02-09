@@ -19,7 +19,7 @@ public:
   FunSurfGridPtr FSurf;
 #endif
   /* ********************************************************************** */
-  Org() : Org(2, 8) {
+  Org() : Org(2, 4) {
 #ifdef Nested
     FSurf = new FunSurfGrid(2, 4);
 #endif
