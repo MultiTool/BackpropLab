@@ -15,6 +15,7 @@ public:
   const static int NumScores = 2;
   double Score[NumScores];
   struct Lugar *home;// my location
+  static const bool Baselining = false;
 #ifdef Nested
   FunSurfGridPtr FSurf;
 #endif
@@ -41,7 +42,7 @@ public:
   static OrgPtr Abiogenate() {
     OrgPtr org = new Org();
     org->Rand_Init();
-    if(false) {
+    if (Baselining) {
       org->Create_Sigmoid_Deriv_Surface();// snox for testing
     }
     return org;
@@ -58,6 +59,7 @@ public:
   }
   /* ********************************************************************** */
   void Mutate_Me(double MRate) {
+    if (Baselining) {return;}
     double MutAmp = 0.01;
     double HalfAmp = MutAmp/2.0;
     uint32_t siz = this->NumCells;

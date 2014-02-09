@@ -151,7 +151,8 @@ public:
     printf("avgbeast Score:%lf, numwinners:%li\n", avgbeast, numwinners);
     printf("leastbeast->Score:%lf, %lf\n", leastbeast->Score[0], leastbeast->Score[1]);
     Birth_And_Death(SurvivalRate);
-    Mutate(0.8, 0.8);
+    // Mutate(0.8, 0.8);
+    Mutate_Sorted(0.8, 0.8);
   }
   /* ********************************************************************** */
   double AvgBeast() {
@@ -217,6 +218,16 @@ public:
     int cnt;
     for (cnt=0; cnt<siz; cnt++) {
       ScoreDexv[cnt]->Print_Score();
+    }
+  }
+  /* ********************************************************************** */
+  void Mutate_Sorted(double Pop_MRate, double Org_MRate) {
+    size_t siz = this->forestv.size();
+    for (int cnt=16; cnt<siz; cnt++) {
+      if (frand()<Pop_MRate) {
+        OrgPtr org = this->ScoreDexv[cnt];
+        org->Mutate_Me(Org_MRate);
+      }
     }
   }
   /* ********************************************************************** */
