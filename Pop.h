@@ -151,8 +151,8 @@ public:
     printf("avgbeast Score:%lf, numwinners:%li\n", avgbeast, numwinners);
     printf("leastbeast->Score:%lf, %lf\n", leastbeast->Score[0], leastbeast->Score[1]);
     Birth_And_Death(SurvivalRate);
-    // Mutate(0.8, 0.8);
-    Mutate_Sorted(0.8, 0.8);
+    Mutate(0.8, 0.8);
+    //Mutate_Sorted(0.8, 0.8);
   }
   /* ********************************************************************** */
   double AvgBeast() {
