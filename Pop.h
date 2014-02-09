@@ -145,9 +145,10 @@ public:
     OrgPtr bestbeast = ScoreDexv[0];
     OrgPtr leastbeast = ScoreDexv[this->popsz-2];
     double avgbeast = AvgBeast();
+    int numwinners = NumWinners();
     bestbeast->Print_Me(); printf("\n");
     printf("bestbeast->Score:%lf, %lf\n", bestbeast->Score[0], bestbeast->Score[1]);
-    printf("avgbeast Score:%lf\n", avgbeast);
+    printf("avgbeast Score:%lf, numwinners:%li\n", avgbeast, numwinners);
     printf("leastbeast->Score:%lf, %lf\n", leastbeast->Score[0], leastbeast->Score[1]);
     Birth_And_Death(SurvivalRate);
     Mutate(0.8, 0.8);
@@ -161,6 +162,18 @@ public:
     }
     sum /= (double)siz;
     return sum;
+  }
+  /* ********************************************************************** */
+  size_t NumWinners() {
+    size_t siz = ScoreDexv.size();// only works if sorted descending already
+    size_t wincnt = 0;
+    for (int cnt=0; cnt<siz; cnt++) {
+      if (ScoreDexv[cnt]->Score[0]<0.01){
+        break;
+      }
+      wincnt++;
+    }
+    return wincnt;
   }
   /* ********************************************************************** */
   static bool AscendingScore(OrgPtr b0, OrgPtr b1) {
