@@ -83,19 +83,17 @@ public:
     double in0, in1;
     double goal;
     double ScoreBefore;
+    double WinCnt;
     do {
       BPNet->Randomize_Weights();
       ScoreBefore = Dry_Run_Test(16);
     } while (ScoreBefore==1.0);
-    FSurf->Score[0]=0.0; FSurf->Score[1]=0.0;
+    FSurf->Clear_Score();
     BPNet->Attach_FunSurf(FSurf);
-    double WinCnt;
     WinCnt=0.0;
     for (GenCnt=0; GenCnt<MaxGens; GenCnt++) {
-      num0 = Bit2Int(GenCnt, 0);
-      num1 = Bit2Int(GenCnt, 1);
-      in0 = TransInt(num0);
-      in1 = TransInt(num1);// in0 = TransBit(GenCnt, 0); in1 = TransBit(GenCnt, 1);
+      num0 = Bit2Int(GenCnt, 0); num1 = Bit2Int(GenCnt, 1);
+      in0 = TransInt(num0); in1 = TransInt(num1);
       goal = TransInt(num0 ^ num1);
       BPNet->Load_Inputs(in0, in1, 1.0);
       BPNet->Fire_Gen();
@@ -111,7 +109,7 @@ public:
       BPNet->Backprop(goal);
     }
     FSurf->Score[0] = 1.0 - ( ((double)FinalFail)/(double)MaxGens );
-    double Remainder = MaxGens-GenCnt;
+    double Remainder = MaxGens-GenCnt;// if nobody won *earlier*, then score by average goodness of output
     FSurf->Score[1] = ( (WinCnt+Remainder)/((double)MaxGens) ) - ScoreBefore;
     if (false) {
       printf("\n");
@@ -125,7 +123,7 @@ public:
     }
   }
   /* ********************************************************************** */
-  void Gen() { // new generation
+  void Gen() { // each generation
     printf("Pop.Gen()\n");
     uint32_t popsize = this->forestv.size();
     LugarPtr lugar;

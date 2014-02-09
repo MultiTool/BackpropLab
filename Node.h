@@ -71,12 +71,9 @@ public:
     MinCorr = INT32_MAX;
     MaxCorr = INT32_MIN;
     this->LRate = 0.0;
-//    this->fsurf = new FunSurfGrid(2, 4);
-//    this->fsurf->Create_Sigmoid_Deriv_Surface();
   }
   /* ********************************************************************** */
   ~Node() {
-    //delete this->fsurf;
     int cnt;
     for (cnt=0; cnt<this->Working_Ins.size(); cnt++) {
       delete this->Working_Ins.at(cnt);
