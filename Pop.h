@@ -78,7 +78,7 @@ public:
   /* ********************************************************************** */
   void Run_Test(OrgPtr FSurf) {
     uint32_t MaxGens = 2000;
-    uint32_t DoneThresh = 16;
+    uint32_t DoneThresh = 128;//16; //64;
     uint32_t FinalFail = 0;
     uint32_t GenCnt;
     uint32_t num0, num1;

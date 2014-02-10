@@ -115,7 +115,7 @@ int main() {
 
   if (true) {
     Pop pop;
-    for (int gencnt=0; gencnt<4000; gencnt++) {
+    for (int gencnt=0; gencnt<16000; gencnt++) {
       printf("gencnt:%li, ", gencnt);
       pop.Gen();
       // pop.Print_Sorted_Scores();
