@@ -49,7 +49,7 @@ public:
   }
   /* ********************************************************************** */
   void Rand_Init() {
-    double MutAmp = 0.01;
+    double MutAmp = 2.0;
     double HalfAmp = MutAmp/2.0;
     uint32_t siz = this->NumCells;
     uint32_t cnt;

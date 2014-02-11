@@ -125,15 +125,16 @@ public:
       printf("numgens:%li, FinalFail:%li\n", MaxGens, FinalFail);
     }
   }
+  double avgnumwinners = 0.0;
   /* ********************************************************************** */
-  void Gen() { // each generation
+  void Gen(uint32_t evogens, uint32_t gencnt) { // each generation
     printf("Pop.Gen()\n");
     uint32_t popsize = this->forestv.size();
     LugarPtr lugar;
     OrgPtr parent, child, candidate;
     uint32_t pcnt;
     LugarPtr place;
-
+    this->BPNet->Print_Specs();
     for (pcnt=0; pcnt<popsize; pcnt++) {
       lugar = forestv[pcnt];
       candidate = lugar->tenant;
@@ -146,12 +147,19 @@ public:
     OrgPtr leastbeast = ScoreDexv[this->popsz-2];
     double avgbeast = AvgBeast();
     int numwinners = NumWinners();
+    avgnumwinners = (avgnumwinners*0.98) + ((double)numwinners)*0.02;
     bestbeast->Print_Me(); printf("\n");
     printf("bestbeast->Score:%lf, %lf\n", bestbeast->Score[0], bestbeast->Score[1]);
-    printf("avgbeast Score:%lf, numwinners:%li\n", avgbeast, numwinners);
+    printf("avgbeast Score:%lf, numwinners:%li, avgnumwinners:%lf\n", avgbeast, numwinners, avgnumwinners);
     printf("leastbeast->Score:%lf, %lf\n", leastbeast->Score[0], leastbeast->Score[1]);
     Birth_And_Death(SurvivalRate);
-    Mutate(0.8, 0.8);
+
+    if (16<(evogens - gencnt)){
+      Mutate(0.8, 0.8);
+      printf("Mutation \n");
+    }else{
+      printf("NO MUTATION \n");
+    }
     //Mutate_Sorted(0.8, 0.8);
   }
   /* ********************************************************************** */
@@ -232,14 +240,19 @@ public:
   }
   /* ********************************************************************** */
   void Mutate(double Pop_MRate, double Org_MRate) {
-    size_t siz = this->forestv.size();
-    for (int cnt=0; cnt<siz; cnt++) {
+    OrgPtr org;
+    size_t LastOrg;
+    //size_t siz = this->forestv.size();
+    size_t siz = this->ScoreDexv.size(); LastOrg = siz-1;
+    for (int cnt=0; cnt<LastOrg; cnt++) {
       if (frand()<Pop_MRate) {
-        LugarPtr lugar = this->forestv.at(cnt);
-        OrgPtr org = lugar->tenant;
+        //LugarPtr lugar = this->forestv.at(cnt);
+        org = this->ScoreDexv[cnt];// lugar->tenant;
         org->Mutate_Me(Org_MRate);
       }
     }
+    org = this->ScoreDexv[LastOrg];
+    org->Rand_Init();
   }
   /* ********************************************************************** */
   void Compile_Me() {

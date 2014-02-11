@@ -54,12 +54,13 @@ public:
     int largo = 200;
     // largo = 1;
     largo = 10;
-    largo = 20;
+    //largo = 20;
     //largo = 30; largo = 100;
     for (int lcnt=0; lcnt<largo; lcnt++) {
       //clnow = new Cluster(4); Layers.push_back(clnow);
       //clnow = new Cluster(2+largo); Layers.push_back(clnow);
-      clnow = new Cluster(largo/4); Layers.push_back(clnow);
+      //clnow = new Cluster(largo/4); Layers.push_back(clnow);
+      clnow = new Cluster(largo/2); Layers.push_back(clnow);
       clnow->Connect_Other_Cluster(clprev);
       if(true) {
         if (lcnt<=5) {//if (lcnt<largo-5) {
@@ -122,6 +123,16 @@ public:
       clnow = Layers.at(lcnt);
       clnow->Randomize_Weights();
     }
+  }
+  /* ********************************************************************** */
+  void Print_Specs() {
+    ClusterPtr cluster;
+    size_t siz = this->Layers.size();
+    printf(" Stack depth:%li, ", siz);
+    cluster = this->Layers.at(1);
+    size_t width = cluster->NodeList.size();
+    printf(" Mid Width:%li ", width);
+    printf(" \n");
   }
   /* ********************************************************************** */
   void Print_Me() {

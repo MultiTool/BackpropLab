@@ -114,10 +114,13 @@ int main() {
   cout << "Hello world!" << endl;
 
   if (true) {
+    uint32_t evogens = 4000;
+    evogens = 16000;
+
     Pop pop;
-    for (int gencnt=0; gencnt<16000; gencnt++) {
+    for (uint32_t gencnt=0; gencnt<evogens; gencnt++) {
       printf("gencnt:%li, ", gencnt);
-      pop.Gen();
+      pop.Gen(evogens, gencnt);
       // pop.Print_Sorted_Scores();
     }
     pop.Print_Sorted_Scores();
