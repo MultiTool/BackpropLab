@@ -4,6 +4,15 @@
 #include "Node.h"
 
 /* ********************************************************************** */
+class IOPair;
+typedef IOPair *IOPairPtr;
+typedef std::vector<IOPairPtr> IOPairVec;
+class IOPair {
+public:
+  std::vector<double> invec, goalvec;
+};
+
+/* ********************************************************************** */
 class Cluster;
 typedef Cluster *ClusterPtr;
 typedef std::vector<ClusterPtr> ClusterVec;
@@ -152,7 +161,24 @@ public:
     }
     printf("\n");
   }
+  /* ********************************************************************** */
+  void Load_Inputs(std::vector<double> *invec) {
+    size_t siz = invec->size();
+    if (siz<this->NodeList.size()) { siz = this->NodeList.size(); }
+    for (size_t cnt=0; cnt<siz; cnt++) {
+      this->NodeList.at(cnt)->FireVal = invec->at(cnt);
+    }
+  }
+  /* ********************************************************************** */
+  void Load_Correctors(std::vector<double> *goalvec) {
+    size_t siz = goalvec->size();
+    if (siz<this->NodeList.size()) { siz = this->NodeList.size(); }
+    double FireVal;
+    for (size_t cnt=0; cnt<siz; cnt++) {
+      FireVal = this->NodeList.at(0)->FireVal;
+      this->NodeList.at(cnt)->Corrector = goalvec->at(cnt)-FireVal;
+    }
+  }
 };
-
 
 #endif // CLUSTER_H_INCLUDED

@@ -54,7 +54,7 @@ public:
     int largo = 200;
     // largo = 1;
     largo = 10;
-    //largo = 20;
+    largo = 20;
     //largo = 30; largo = 100;
     for (int lcnt=0; lcnt<largo; lcnt++) {
       //clnow = new Cluster(4); Layers.push_back(clnow);
@@ -83,6 +83,10 @@ public:
     InLayer->NodeList.at(2)->FireVal = in2;
   }
   /* ********************************************************************** */
+  void Load_Inputs(std::vector<double> *invec) {
+    InLayer->Load_Inputs(invec);
+  }
+  /* ********************************************************************** */
   void Fire_Gen() {
     int lcnt;
     ClusterPtr clnow;
@@ -100,6 +104,7 @@ public:
 
     double FireVal = OutLayer->NodeList.at(0)->FireVal;
     OutLayer->NodeList.at(0)->Corrector = goal-FireVal;
+    // OutLayer->Load_Correctors(goalvec);
 
     int LastLayer = Layers.size()-1;
     clnow = Layers.at(LastLayer);

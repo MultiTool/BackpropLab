@@ -22,6 +22,7 @@ public:
   LugarVec forestv;
   OrgVec ScoreDexv; // for sorting
   StackPtr BPNet;// crucible
+  std::vector<IOPairVec*> TrainingSets;
   /* ********************************************************************** */
   Pop() : Pop(popmax) {
   }
@@ -54,6 +55,56 @@ public:
     delete BPNet;
   }
   /* ********************************************************************** */
+  void Init_Training_Sets() {
+    IOPairVec *tset;
+    IOPairPtr match;
+
+    tset = new IOPairVec(); TrainingSets.push_back(tset);
+    { // first XOR
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
+    }
+
+    tset = new IOPairVec(); TrainingSets.push_back(tset);
+    { // AND?
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+    }
+
+    tset = new IOPairVec(); TrainingSets.push_back(tset);
+    { // OR
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+    }
+  }
+  /* ********************************************************************** */
   double Dry_Run_Test(uint32_t MaxGens) {
     uint32_t GenCnt;
     uint32_t num0, num1;
@@ -78,7 +129,7 @@ public:
   /* ********************************************************************** */
   void Run_Test(OrgPtr FSurf) {
     uint32_t MaxGens = 2000;
-    uint32_t DoneThresh = 128;//16; //64;
+    uint32_t DoneThresh = 32; //64;// 128;//16; //64;
     uint32_t FinalFail = 0;
     uint32_t GenCnt;
     uint32_t num0, num1;
@@ -154,10 +205,10 @@ public:
     printf("leastbeast->Score:%lf, %lf\n", leastbeast->Score[0], leastbeast->Score[1]);
     Birth_And_Death(SurvivalRate);
 
-    if (16<(evogens - gencnt)){
+    if (16<(evogens - gencnt)) {
       Mutate(0.8, 0.8);
       printf("Mutation \n");
-    }else{
+    } else {
       printf("NO MUTATION \n");
     }
     //Mutate_Sorted(0.8, 0.8);
@@ -177,7 +228,7 @@ public:
     size_t siz = ScoreDexv.size();// only works if sorted descending already
     size_t wincnt = 0;
     for (int cnt=0; cnt<siz; cnt++) {
-      if (ScoreDexv[cnt]->Score[0]<0.01){
+      if (ScoreDexv[cnt]->Score[0]<0.01) {
         break;
       }
       wincnt++;
