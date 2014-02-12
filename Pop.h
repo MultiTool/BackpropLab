@@ -22,6 +22,8 @@ public:
   LugarVec forestv;
   OrgVec ScoreDexv; // for sorting
   StackPtr BPNet;// crucible
+  uint32_t MaxNeuroGens = 2000;
+  uint32_t DoneThresh = 64; //32; //64;// 128;//16;
   std::vector<IOPairVec*> TrainingSets;
   /* ********************************************************************** */
   Pop() : Pop(popmax) {
@@ -105,14 +107,14 @@ public:
     }
   }
   /* ********************************************************************** */
-  double Dry_Run_Test(uint32_t MaxGens) {
+  double Dry_Run_Test(uint32_t MaxNeuroGens) {
     uint32_t GenCnt;
     uint32_t num0, num1;
     double in0, in1;
     double goal;
     double WinCnt;
     WinCnt=0.0;
-    for (GenCnt=0; GenCnt<MaxGens; GenCnt++) {
+    for (GenCnt=0; GenCnt<MaxNeuroGens; GenCnt++) {
       num0 = Bit2Int(GenCnt, 0);
       num1 = Bit2Int(GenCnt, 1);
       in0 = TransInt(num0);
@@ -124,12 +126,10 @@ public:
       double fire = BPNet->OutLayer->NodeList.at(0)->FireVal;
       if (goal*fire>0) { WinCnt++; }
     }
-    return WinCnt/((double)MaxGens);
+    return WinCnt/((double)MaxNeuroGens);
   }
   /* ********************************************************************** */
   void Run_Test(OrgPtr FSurf) {
-    uint32_t MaxGens = 2000;
-    uint32_t DoneThresh = 32; //64;// 128;//16; //64;
     uint32_t FinalFail = 0;
     uint32_t GenCnt;
     uint32_t num0, num1;
@@ -144,7 +144,7 @@ public:
     FSurf->Clear_Score();
     BPNet->Attach_FunSurf(FSurf);
     WinCnt=0.0;
-    for (GenCnt=0; GenCnt<MaxGens; GenCnt++) {
+    for (GenCnt=0; GenCnt<MaxNeuroGens; GenCnt++) {
       num0 = Bit2Int(GenCnt, 0); num1 = Bit2Int(GenCnt, 1);
       in0 = TransInt(num0); in1 = TransInt(num1);
       goal = TransInt(num0 ^ num1);
@@ -162,9 +162,10 @@ public:
       }
       BPNet->Backprop(goal);
     }
-    FSurf->Score[0] = 1.0 - ( ((double)FinalFail)/(double)MaxGens );
-    double Remainder = MaxGens-GenCnt;// if nobody won *earlier*, then score by average goodness of output
-    FSurf->Score[1] = ( (WinCnt+Remainder)/((double)MaxGens) ) - ScoreBefore;
+    FSurf->FinalFail = FinalFail;
+    FSurf->Score[0] = 1.0 - ( ((double)FinalFail)/(double)MaxNeuroGens );
+    double Remainder = MaxNeuroGens-GenCnt;// if nobody won *earlier*, then score by average goodness of output
+    FSurf->Score[1] = ( (WinCnt+Remainder)/((double)MaxNeuroGens) ) - ScoreBefore;
     if (false) {
       printf("\n");
       if (false) {
@@ -173,7 +174,7 @@ public:
         BPNet->Print_Me();
         printf("\n");
       }
-      printf("numgens:%li, FinalFail:%li\n", MaxGens, FinalFail);
+      printf("MaxNeuroGens:%li, FinalFail:%li\n", MaxNeuroGens, FinalFail);
     }
   }
   double avgnumwinners = 0.0;
@@ -228,10 +229,10 @@ public:
     size_t siz = ScoreDexv.size();// only works if sorted descending already
     size_t wincnt = 0;
     for (int cnt=0; cnt<siz; cnt++) {
-      if (ScoreDexv[cnt]->Score[0]<0.01) {
-        break;
-      }
-      wincnt++;
+      // if (ScoreDexv[cnt]->FinalFail >= (MaxNeuroGens-DoneThresh)) { break; }
+      //if (ScoreDexv[cnt]->Score[0]<0.01) { break; }
+      if (ScoreDexv[cnt]->FinalFail < (MaxNeuroGens-DoneThresh)) { wincnt++; }
+      //wincnt++;
     }
     return wincnt;
   }

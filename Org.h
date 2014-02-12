@@ -14,6 +14,7 @@ class Org : public FunSurfGrid {
 public:
   const static int NumScores = 2;
   double Score[NumScores];
+  uint32_t FinalFail;
   struct Lugar *home;// my location
   static const bool Baselining = false;
 #ifdef Nested
