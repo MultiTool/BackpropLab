@@ -83,6 +83,18 @@ double frand() {
   return  ((double)rand()) / ((double)RAND_MAX);
 }
 
+namespace BitInt{
+  /* ********************************************************************** */
+  inline static double TransBit(int val, int bitnum) {
+    return ((double)((val >> bitnum)&0x1)) * 2.0 - 1.0;
+  }
+  inline static double TransInt(int val) {
+    return ((double)val) * 2.0 - 1.0;
+  }
+  inline static uint32_t Bit2Int(int val, int bitnum) {
+    return ((val >> bitnum)&0x1);
+  }
+}
 /* **************************************************************************** */
 static void Distribution() {
   int raysz = 10;// array size

@@ -92,6 +92,12 @@ public:
     }
   }
   /* ********************************************************************** */
+  void Rescale_Score(double Factor) {
+    for (int cnt=0; cnt<NumScores; cnt++) {
+      this->Score[cnt]*=Factor;
+    }
+  }
+  /* ********************************************************************** */
 //  void Print_Me() override {
 //    printf("Org\n");
 //  }

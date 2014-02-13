@@ -123,6 +123,7 @@ int main() {
       pop.Gen(evogens, gencnt);
       // pop.Print_Sorted_Scores();
     }
+    pop.BPNet->Print_Me();
     pop.Print_Sorted_Scores();
     return 0;
   }
@@ -135,11 +136,11 @@ int main() {
   stk.Attach_FunSurf(&fs);
 
   for (int gcnt=0; gcnt<numgens; gcnt++) {
-    num0 = Pop::Bit2Int(gcnt, 0);
-    num1 = Pop::Bit2Int(gcnt, 1);
-    in0 = Pop::TransInt(num0);
-    in1 = Pop::TransInt(num1);// in0 = TransBit(gcnt, 0); in1 = TransBit(gcnt, 1);
-    goal = Pop::TransInt(num0 ^ num1);
+    num0 = BitInt::Bit2Int(gcnt, 0);
+    num1 = BitInt::Bit2Int(gcnt, 1);
+    in0 = BitInt::TransInt(num0);
+    in1 = BitInt::TransInt(num1);// in0 = TransBit(gcnt, 0); in1 = TransBit(gcnt, 1);
+    goal = BitInt::TransInt(num0 ^ num1);
     stk.Load_Inputs(in0, in1, 1.0);
     stk.Fire_Gen();
     double fire = stk.OutLayer->NodeList.at(0)->FireVal;

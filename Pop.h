@@ -54,12 +54,17 @@ public:
   }
   /* ********************************************************************** */
   ~Pop() {
-    int siz, pcnt;
+    size_t siz, pcnt;
     siz = forestv.size();
     for (pcnt=0; pcnt<siz; pcnt++) {
       delete forestv.at(pcnt);
     }
     delete BPNet;
+
+    siz = TrainingSets.size();
+    for (pcnt=0;pcnt<siz;pcnt++){
+      delete TrainingSets.at(pcnt);
+    }
   }
   /* ********************************************************************** */
   void Init_Training_Sets() {
@@ -151,11 +156,11 @@ public:
     double WinCnt;
     WinCnt=0.0;
     for (GenCnt=0; GenCnt<MaxNeuroGens; GenCnt++) {
-      num0 = Bit2Int(GenCnt, 0);
-      num1 = Bit2Int(GenCnt, 1);
-      in0 = TransInt(num0);
-      in1 = TransInt(num1);
-      goal = TransInt(num0 ^ num1);
+      num0 = BitInt::Bit2Int(GenCnt, 0);
+      num1 = BitInt::Bit2Int(GenCnt, 1);
+      in0 = BitInt::TransInt(num0);
+      in1 = BitInt::TransInt(num1);
+      goal = BitInt::TransInt(num0 ^ num1);
       //goal = TransInt(num0 & num1);
       BPNet->Load_Inputs(in0, in1, 1.0);
       BPNet->Fire_Gen();
@@ -181,9 +186,9 @@ public:
     BPNet->Attach_FunSurf(FSurf);
     WinCnt=0.0;
     for (GenCnt=0; GenCnt<MaxNeuroGens; GenCnt++) {
-      num0 = Bit2Int(GenCnt, 0); num1 = Bit2Int(GenCnt, 1);
-      in0 = TransInt(num0); in1 = TransInt(num1);
-      goal = TransInt(num0 ^ num1);
+      num0 = BitInt::Bit2Int(GenCnt, 0); num1 = BitInt::Bit2Int(GenCnt, 1);
+      in0 = BitInt::TransInt(num0); in1 = BitInt::TransInt(num1);
+      goal = BitInt::TransInt(num0 ^ num1);
       //goal = TransInt(num0 & num1);
       BPNet->Load_Inputs(in0, in1, 1.0);
       BPNet->Fire_Gen();
@@ -285,7 +290,7 @@ public:
         TrainingSets.at(tcnt)->Shuffle();
         this->Run_Test(candidate, TrainingSets.at(tcnt));
       }
-      candidate->Score[0] /= TrainingSets.size(); candidate->Score[1] /= TrainingSets.size();
+      candidate->Rescale_Score(1.0/((double)TrainingSets.size()));
       // printf("candidate->Score:%lf, %lf\n", candidate->Score[0], candidate->Score[1]);
     }
     double SurvivalRate = 0.5;
@@ -411,16 +416,6 @@ public:
       OrgPtr org = lugar->tenant;
       org->Compile_Me();
     }
-  }
-  /* ********************************************************************** */
-  inline static double TransBit(int val, int bitnum) {
-    return ((double)((val >> bitnum)&0x1)) * 2.0 - 1.0;
-  }
-  inline static double TransInt(int val) {
-    return ((double)val) * 2.0 - 1.0;
-  }
-  inline static uint32_t Bit2Int(int val, int bitnum) {
-    return ((val >> bitnum)&0x1);
   }
 };
 

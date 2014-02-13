@@ -15,8 +15,37 @@ class TrainSet;
 typedef TrainSet *TrainSetPtr;
 class TrainSet : public IOPairVec {
 public:
-  void Shuffle(){
+  ~TrainSet() {
+    this->Clear();
+  };
+  void Clear() {
+    // IOPairPtr pptr;
+    for (int cnt=0; cnt<this->size(); cnt++) {
+      delete this->at(cnt);
+    }
+    this->clear();
+  }
+  void Shuffle() {
     std::random_shuffle(this->begin(), this->end());
+  }
+  void Random_Truth(uint32_t Num_InBits) {
+    this->Clear();// Create a random truth table with Num_InBits inputs and 1 output.
+    IOPairPtr match;
+    // Num_InBits = 2;
+    uint32_t InTable_Size = 1<<Num_InBits;// 2 to the Num_InBits
+    uint32_t OutPossibilities = 1<<InTable_Size;// 2 to the InTable_Size
+    OutPossibilities-=2;// eliminate 000... and 111... as outputs
+    uint32_t outstatebits = 1 + (rand() % OutPossibilities);
+    double outstate, instate;
+    for (uint32_t instatecnt=0; instatecnt<InTable_Size; instatecnt++) {
+      match = new IOPair(); this->push_back(match);
+      outstate = BitInt::TransBit(outstatebits, instatecnt);
+      for (uint32_t inbitcnt=0; inbitcnt<Num_InBits; inbitcnt++) {
+        instate = BitInt::TransBit(instatecnt, inbitcnt);
+        match->invec.push_back(instate);
+      }
+      match->goalvec.push_back(outstate);
+    }
   }
 };
 /* ********************************************************************** */
