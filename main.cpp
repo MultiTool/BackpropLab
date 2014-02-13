@@ -115,7 +115,7 @@ int main() {
 
   if (true) {
     uint32_t evogens = 4000;
-    evogens = 16000;
+    //evogens = 16000;
 
     Pop pop;
     for (uint32_t gencnt=0; gencnt<evogens; gencnt++) {

@@ -182,9 +182,11 @@ public:
     size_t siz = goalvec->size();
     if (siz<this->NodeList.size()) { siz = this->NodeList.size(); }
     double FireVal;
+    NodePtr node;
     for (size_t cnt=0; cnt<siz; cnt++) {
-      FireVal = this->NodeList.at(0)->FireVal;
-      this->NodeList.at(cnt)->Corrector = goalvec->at(cnt)-FireVal;
+      node = this->NodeList.at(cnt);
+      FireVal = node->FireVal;
+      node->Corrector = goalvec->at(cnt)-FireVal;
     }
   }
 };

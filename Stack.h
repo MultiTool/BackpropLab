@@ -54,15 +54,15 @@ public:
     int largo = 200;
     // largo = 1;
     largo = 10;
-    largo = 20;
-    largo = 30;
+    //largo = 20;
+    //largo = 30;
     //largo = 30; largo = 100;
     for (int lcnt=0; lcnt<largo; lcnt++) {
       //clnow = new Cluster(4); Layers.push_back(clnow);
       //clnow = new Cluster(2+largo); Layers.push_back(clnow);
-      //clnow = new Cluster(largo/4); Layers.push_back(clnow);
+      clnow = new Cluster(largo/4); Layers.push_back(clnow);
       //clnow = new Cluster(largo/2); Layers.push_back(clnow);
-      clnow = new Cluster(10); Layers.push_back(clnow);
+      //clnow = new Cluster(10); Layers.push_back(clnow);
       clnow->Connect_Other_Cluster(clprev);
       if(true) {
         if (lcnt<=5) {//if (lcnt<largo-5) {
@@ -107,6 +107,27 @@ public:
     double FireVal = OutLayer->NodeList.at(0)->FireVal;
     OutLayer->NodeList.at(0)->Corrector = goal-FireVal;
     // OutLayer->Load_Correctors(goalvec);
+
+    int LastLayer = Layers.size()-1;
+    clnow = Layers.at(LastLayer);
+    for (lcnt=LastLayer-1; lcnt>=0; lcnt--) {
+      clnow->Push_Correctors_Backward();
+      clnow = Layers.at(lcnt);
+      clnow->Pull_Correctors();// absorb
+    }
+
+    for (lcnt=LastLayer; lcnt>=0; lcnt--) {
+      clnow = Layers.at(lcnt);
+      clnow->Apply_Correctors();
+    }
+  }
+
+  /* ********************************************************************** */
+  void Backprop(std::vector<double> *goalvec) {
+    int lcnt;
+    ClusterPtr clnow;
+
+    OutLayer->Load_Correctors(goalvec);
 
     int LastLayer = Layers.size()-1;
     clnow = Layers.at(LastLayer);

@@ -24,6 +24,7 @@ public:
   StackPtr BPNet;// crucible
   uint32_t MaxNeuroGens = 2000;
   uint32_t DoneThresh = 32;//64; //32; //64;// 128;//16;
+  double avgnumwinners = 0.0;
   std::vector<TrainSetPtr> TrainingSets;
   /* ********************************************************************** */
   Pop() : Pop(popmax) {
@@ -34,8 +35,11 @@ public:
     LugarPtr lugar;
     Org *org;
     int pcnt;
-    BPNet->Create_Simple();
-    //BPNet->Create_Any_Depth();
+    if (true) {
+      BPNet->Create_Simple();
+    } else {
+      BPNet->Create_Any_Depth();
+    }
     this->popsz = popsize;
     forestv.resize(popsize);
     ScoreDexv.resize(popsize);
@@ -78,7 +82,7 @@ public:
     }
 
     tset = new TrainSet(); TrainingSets.push_back(tset);
-    { // AND?
+    { // AND
       match = new IOPair(); tset->push_back(match);
       match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
 
@@ -106,9 +110,40 @@ public:
       match = new IOPair(); tset->push_back(match);
       match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
     }
+
+    tset = new TrainSet(); TrainingSets.push_back(tset);
+    { // NXOR
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+    }
+
+    tset = new TrainSet(); TrainingSets.push_back(tset);
+    { // NAND
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
+    }
+
   }
   /* ********************************************************************** */
-  double Dry_Run_Test(uint32_t MaxNeuroGens) {
+  double Dry_Run_TestX(uint32_t MaxNeuroGens) {
     uint32_t GenCnt;
     uint32_t num0, num1;
     double in0, in1;
@@ -130,8 +165,8 @@ public:
     return WinCnt/((double)MaxNeuroGens);
   }
   /* ********************************************************************** */
-  void Run_Test(OrgPtr FSurf) {
-    uint32_t FinalFail = 0;
+  void Run_TestX(OrgPtr FSurf) {
+    uint32_t FinalFail = 0;// Run_TestX is deprecated
     uint32_t GenCnt;
     uint32_t num0, num1;
     double in0, in1;
@@ -140,7 +175,7 @@ public:
     double WinCnt;
     do {
       BPNet->Randomize_Weights();
-      ScoreBefore = Dry_Run_Test(16);
+      ScoreBefore = Dry_Run_TestX(16);
     } while (ScoreBefore==1.0);
     FSurf->Clear_Score();
     BPNet->Attach_FunSurf(FSurf);
@@ -200,23 +235,19 @@ public:
   void Run_Test(OrgPtr FSurf, TrainSetPtr TSet) {
     uint32_t FinalFail = 0;
     uint32_t GenCnt;
-    uint32_t num0, num1;
-    double in0, in1;
     double goal;
     double ScoreBefore;
     double WinCnt;
     IOPairPtr Pair;
     do {
       BPNet->Randomize_Weights();
-      ScoreBefore = Dry_Run_Test(16);
+      ScoreBefore = Dry_Run_Test(16, TSet);
     } while (ScoreBefore==1.0);
-    FSurf->Clear_Score();
     BPNet->Attach_FunSurf(FSurf);
     WinCnt=0.0;
     for (GenCnt=0; GenCnt<MaxNeuroGens; GenCnt++) {
       Pair = TSet->at(GenCnt%TSet->size());
       goal = Pair->goalvec.at(0);
-      //BPNet->Load_Inputs(Pair->invec.at(0), Pair->invec.at(1), 1.0);
       BPNet->Load_Inputs(&(Pair->invec));
       BPNet->Fire_Gen();
       double fire = BPNet->OutLayer->NodeList.at(0)->FireVal;
@@ -228,24 +259,14 @@ public:
       if ((GenCnt-FinalFail)>DoneThresh) {
         break;
       }
-      BPNet->Backprop(goal);
+      // BPNet->Backprop(goal);
+      BPNet->Backprop(&(Pair->goalvec));
     }
     FSurf->FinalFail = FinalFail;
-    FSurf->Score[0] = 1.0 - ( ((double)FinalFail)/(double)MaxNeuroGens );
+    FSurf->Score[0] += 1.0 - ( ((double)FinalFail)/(double)MaxNeuroGens );
     double Remainder = MaxNeuroGens-GenCnt;// if nobody won *earlier*, then score by average goodness of output
-    FSurf->Score[1] = ( (WinCnt+Remainder)/((double)MaxNeuroGens) ) - ScoreBefore;
-    if (false) {
-      printf("\n");
-      if (false) {
-        FSurf->Print_Me();
-        printf("\n\n");
-        BPNet->Print_Me();
-        printf("\n");
-      }
-      printf("MaxNeuroGens:%li, FinalFail:%li\n", MaxNeuroGens, FinalFail);
-    }
+    FSurf->Score[1] += ( (WinCnt+Remainder)/((double)MaxNeuroGens) ) - ScoreBefore;
   }
-  double avgnumwinners = 0.0;
   /* ********************************************************************** */
   void Gen(uint32_t evogens, uint32_t gencnt) { // each generation
     printf("Pop.Gen()\n");
@@ -258,8 +279,12 @@ public:
     for (pcnt=0; pcnt<popsize; pcnt++) {
       lugar = forestv[pcnt];
       candidate = lugar->tenant;
+      candidate->Clear_Score();
       // this->Run_Test(candidate);
-      this->Run_Test(candidate, TrainingSets.at(0));// xor
+      for (int tcnt=0; tcnt<TrainingSets.size(); tcnt++) {
+        this->Run_Test(candidate, TrainingSets.at(tcnt));
+      }
+      candidate->Score[0] /= TrainingSets.size(); candidate->Score[1] /= TrainingSets.size();
       // printf("candidate->Score:%lf, %lf\n", candidate->Score[0], candidate->Score[1]);
     }
     double SurvivalRate = 0.5;
