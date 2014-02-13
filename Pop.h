@@ -23,8 +23,8 @@ public:
   OrgVec ScoreDexv; // for sorting
   StackPtr BPNet;// crucible
   uint32_t MaxNeuroGens = 2000;
-  uint32_t DoneThresh = 64; //32; //64;// 128;//16;
-  std::vector<IOPairVec*> TrainingSets;
+  uint32_t DoneThresh = 32;//64; //32; //64;// 128;//16;
+  std::vector<TrainSetPtr> TrainingSets;
   /* ********************************************************************** */
   Pop() : Pop(popmax) {
   }
@@ -58,10 +58,10 @@ public:
   }
   /* ********************************************************************** */
   void Init_Training_Sets() {
-    IOPairVec *tset;
+    TrainSetPtr tset;
     IOPairPtr match;
 
-    tset = new IOPairVec(); TrainingSets.push_back(tset);
+    tset = new TrainSet(); TrainingSets.push_back(tset);
     { // first XOR
       match = new IOPair(); tset->push_back(match);
       match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
@@ -76,7 +76,7 @@ public:
       match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
     }
 
-    tset = new IOPairVec(); TrainingSets.push_back(tset);
+    tset = new TrainSet(); TrainingSets.push_back(tset);
     { // AND?
       match = new IOPair(); tset->push_back(match);
       match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
@@ -91,7 +91,7 @@ public:
       match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
     }
 
-    tset = new IOPairVec(); TrainingSets.push_back(tset);
+    tset = new TrainSet(); TrainingSets.push_back(tset);
     { // OR
       match = new IOPair(); tset->push_back(match);
       match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);

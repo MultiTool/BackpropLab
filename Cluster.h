@@ -11,7 +11,15 @@ class IOPair {
 public:
   std::vector<double> invec, goalvec;
 };
-
+class TrainSet;
+typedef TrainSet *TrainSetPtr;
+class TrainSet : public IOPairVec {
+public:
+  int filler;
+  void Shuffle(){
+    std::random_shuffle(this->begin(), this->end());
+  }
+};
 /* ********************************************************************** */
 class Cluster;
 typedef Cluster *ClusterPtr;
