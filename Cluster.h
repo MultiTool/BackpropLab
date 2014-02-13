@@ -15,7 +15,6 @@ class TrainSet;
 typedef TrainSet *TrainSetPtr;
 class TrainSet : public IOPairVec {
 public:
-  int filler;
   void Shuffle(){
     std::random_shuffle(this->begin(), this->end());
   }

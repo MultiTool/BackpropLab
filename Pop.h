@@ -282,6 +282,7 @@ public:
       candidate->Clear_Score();
       // this->Run_Test(candidate);
       for (int tcnt=0; tcnt<TrainingSets.size(); tcnt++) {
+        TrainingSets.at(tcnt)->Shuffle();
         this->Run_Test(candidate, TrainingSets.at(tcnt));
       }
       candidate->Score[0] /= TrainingSets.size(); candidate->Score[1] /= TrainingSets.size();
