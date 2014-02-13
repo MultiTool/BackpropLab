@@ -34,8 +34,8 @@ public:
     LugarPtr lugar;
     Org *org;
     int pcnt;
-    //BPNet->Create_Simple();
-    BPNet->Create_Any_Depth();
+    BPNet->Create_Simple();
+    //BPNet->Create_Any_Depth();
     this->popsz = popsize;
     forestv.resize(popsize);
     ScoreDexv.resize(popsize);
@@ -258,7 +258,8 @@ public:
     for (pcnt=0; pcnt<popsize; pcnt++) {
       lugar = forestv[pcnt];
       candidate = lugar->tenant;
-      this->Run_Test(candidate);
+      // this->Run_Test(candidate);
+      this->Run_Test(candidate, TrainingSets.at(0));// xor
       // printf("candidate->Score:%lf, %lf\n", candidate->Score[0], candidate->Score[1]);
     }
     double SurvivalRate = 0.5;
