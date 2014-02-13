@@ -46,6 +46,7 @@ public:
       forestv.at(pcnt) = lugar;
       ScoreDexv.at(pcnt) = org;
     }
+    Init_Training_Sets();
   }
   /* ********************************************************************** */
   ~Pop() {
@@ -64,46 +65,46 @@ public:
     tset = new TrainSet(); TrainingSets.push_back(tset);
     { // first XOR
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
 
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
 
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
 
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
     }
 
     tset = new TrainSet(); TrainingSets.push_back(tset);
     { // AND?
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
 
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
 
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
 
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
     }
 
     tset = new TrainSet(); TrainingSets.push_back(tset);
     { // OR
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
 
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
 
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
 
       match = new IOPair(); tset->push_back(match);
-      match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
     }
   }
   /* ********************************************************************** */
@@ -150,6 +151,73 @@ public:
       goal = TransInt(num0 ^ num1);
       //goal = TransInt(num0 & num1);
       BPNet->Load_Inputs(in0, in1, 1.0);
+      BPNet->Fire_Gen();
+      double fire = BPNet->OutLayer->NodeList.at(0)->FireVal;
+      if (goal*fire>0) {
+        WinCnt++;
+      } else {
+        FinalFail = GenCnt;
+      }
+      if ((GenCnt-FinalFail)>DoneThresh) {
+        break;
+      }
+      BPNet->Backprop(goal);
+    }
+    FSurf->FinalFail = FinalFail;
+    FSurf->Score[0] = 1.0 - ( ((double)FinalFail)/(double)MaxNeuroGens );
+    double Remainder = MaxNeuroGens-GenCnt;// if nobody won *earlier*, then score by average goodness of output
+    FSurf->Score[1] = ( (WinCnt+Remainder)/((double)MaxNeuroGens) ) - ScoreBefore;
+    if (false) {
+      printf("\n");
+      if (false) {
+        FSurf->Print_Me();
+        printf("\n\n");
+        BPNet->Print_Me();
+        printf("\n");
+      }
+      printf("MaxNeuroGens:%li, FinalFail:%li\n", MaxNeuroGens, FinalFail);
+    }
+  }
+  /* ********************************************************************** */
+  double Dry_Run_Test(uint32_t MaxNeuroGens, TrainSetPtr TSet) {
+    uint32_t GenCnt;
+    double goal;
+    double WinCnt;
+    IOPairPtr Pair;
+    WinCnt=0.0;
+    for (GenCnt=0; GenCnt<MaxNeuroGens; GenCnt++) {
+      Pair = TSet->at(GenCnt%TSet->size());
+      goal = Pair->goalvec.at(0);
+      // BPNet->Load_Inputs(Pair->invec.at(0), Pair->invec.at(1), 1.0);
+      BPNet->Load_Inputs(&(Pair->invec));
+      BPNet->Fire_Gen();
+      double fire = BPNet->OutLayer->NodeList.at(0)->FireVal;
+      if (goal*fire>0) { WinCnt++; }
+    }
+    return WinCnt/((double)MaxNeuroGens);
+  }
+  /* ********************************************************************** */
+  void Run_Test(OrgPtr FSurf, TrainSetPtr TSet) {
+    uint32_t FinalFail = 0;
+    uint32_t GenCnt;
+    uint32_t num0, num1;
+    double in0, in1;
+    double goal;
+    double ScoreBefore;
+    double WinCnt;
+    IOPairPtr Pair;
+    do {
+      BPNet->Randomize_Weights();
+      ScoreBefore = Dry_Run_Test(16);
+    } while (ScoreBefore==1.0);
+    FSurf->Clear_Score();
+    BPNet->Attach_FunSurf(FSurf);
+    WinCnt=0.0;
+    for (GenCnt=0; GenCnt<MaxNeuroGens; GenCnt++) {
+      Pair = TSet->at(GenCnt%TSet->size());
+      goal = Pair->goalvec.at(0);
+      //BPNet->Load_Inputs(Pair->invec.at(0), Pair->invec.at(1), 1.0);
+      BPNet->Load_Inputs(&(Pair->invec));
       BPNet->Fire_Gen();
       double fire = BPNet->OutLayer->NodeList.at(0)->FireVal;
       if (goal*fire>0) {
@@ -244,11 +312,13 @@ public:
     return b1->Compare_Score(b0) > 0;
   }
   void Sort() {
-    LugarVec forestv_unref = this->forestv;
-    size_t siz = forestv_unref.size();
-    int cnt;
-    for (cnt=0; cnt<siz; cnt++) {
-      ScoreDexv[cnt] = forestv_unref[cnt]->tenant;
+    if (false) {
+      LugarVec forestv_unref = this->forestv;
+      size_t siz = forestv_unref.size();
+      int cnt;
+      for (cnt=0; cnt<siz; cnt++) {
+        ScoreDexv[cnt] = forestv_unref[cnt]->tenant;
+      }
     }
     std::random_shuffle(ScoreDexv.begin(), ScoreDexv.end());
     // std::sort (ScoreDexv.begin(), ScoreDexv.end(), AscendingScore);
