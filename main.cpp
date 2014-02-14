@@ -113,9 +113,17 @@ int main() {
   double in0, in1;
   cout << "Hello world!" << endl;
 
+  next();
+  /*
+find a way to print final scores without the bottom ones being wiped
+maybe train with a different random truth table each generation.
+at least Shuffle each truth table.
+  */
+
   if (true) {
     uint32_t evogens = 4000;
     //evogens = 16000;
+    //evogens = 1000;
 
     Pop pop;
     for (uint32_t gencnt=0; gencnt<evogens; gencnt++) {
@@ -123,7 +131,7 @@ int main() {
       pop.Gen(evogens, gencnt);
       // pop.Print_Sorted_Scores();
     }
-    pop.BPNet->Print_Me();
+    //pop.BPNet->Print_Me();
     pop.Print_Sorted_Scores();
     return 0;
   }

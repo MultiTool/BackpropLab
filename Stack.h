@@ -60,8 +60,8 @@ public:
     for (int lcnt=0; lcnt<largo; lcnt++) {
       //clnow = new Cluster(4); Layers.push_back(clnow);
       //clnow = new Cluster(2+largo); Layers.push_back(clnow);
-      clnow = new Cluster(largo/4); Layers.push_back(clnow);
-      //clnow = new Cluster(largo/2); Layers.push_back(clnow);
+      //clnow = new Cluster(largo/4); Layers.push_back(clnow);
+      clnow = new Cluster(largo/2); Layers.push_back(clnow);
       //clnow = new Cluster(10); Layers.push_back(clnow);
       clnow->Connect_Other_Cluster(clprev);
       if(true) {

@@ -4,8 +4,6 @@
 #include "Base.h"
 #include "FunSurf.h"
 
-#undef Nested
-
 /* ********************************************************************** */
 class Org;
 typedef Org *OrgPtr;
@@ -17,14 +15,9 @@ public:
   uint32_t FinalFail;
   struct Lugar *home;// my location
   static const bool Baselining = false;
-#ifdef Nested
-  FunSurfGridPtr FSurf;
-#endif
+
   /* ********************************************************************** */
   Org() : Org(2, 4) {
-#ifdef Nested
-    FSurf = new FunSurfGrid(2, 4);
-#endif
   }
   /* ********************************************************************** */
   Org(uint32_t NumDims0, uint32_t Rez0) : FunSurfGrid(NumDims0, Rez0) {
@@ -32,12 +25,10 @@ public:
       this->Score[cnt] = 0.0;
     }
     this->home = NULL;
+    this->FinalFail = 999999999;
   }
   /* ********************************************************************** */
   ~Org() {
-#ifdef Nested
-    delete FSurf;
-#endif
   }
   /* ********************************************************************** */
   static OrgPtr Abiogenate() {
@@ -89,6 +80,12 @@ public:
   void Clear_Score() {
     for (int cnt=0; cnt<NumScores; cnt++) {
       this->Score[cnt]=0.0;
+    }
+  }
+  /* ********************************************************************** */
+  void Oneify_Score() { // this is for accumulating scores by multiplication: Score *= subscore
+    for (int cnt=0; cnt<NumScores; cnt++) {
+      this->Score[cnt]=1.0;
     }
   }
   /* ********************************************************************** */

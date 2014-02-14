@@ -15,6 +15,7 @@ class TrainSet;
 typedef TrainSet *TrainSetPtr;
 class TrainSet : public IOPairVec {
 public:
+  char Name[300];
   ~TrainSet() {
     this->Clear();
   };
@@ -187,7 +188,8 @@ public:
     size_t cnt;
     NodePtr ndp;
     //printf("\n");
-    printf(" **********************************\n");
+    //printf(" **********************************\n");
+    printf(" --------------------------------\n");
     printf(" Cluster ClusterNum:%li, this:%p, ", ClusterNum, this);
     size_t siz = this->NodeList.size();
     printf(" num nodes:%li\n", siz);

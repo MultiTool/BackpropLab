@@ -66,10 +66,7 @@ public:
   FunSurfGridPtr fsurf;
   /* ********************************************************************** */
   Node() {
-    this->FireVal = ((frand()*2.0)-1.0)*0.001;
-    this->PrevFire = ((frand()*2.0)-1.0)*0.001;
-    MinCorr = INT32_MAX;
-    MaxCorr = INT32_MIN;
+    Init();
     this->LRate = 0.0;
   }
   /* ********************************************************************** */
@@ -80,6 +77,13 @@ public:
     }
     this->Working_Ins.clear();// probably not necessary
     this->Working_Outs.clear();
+  }
+  /* ********************************************************************** */
+  void Init(){
+    this->FireVal = ((frand()*2.0)-1.0)*0.001;
+    this->PrevFire = ((frand()*2.0)-1.0)*0.001;
+    MinCorr = INT32_MAX;
+    MaxCorr = INT32_MIN;
   }
   /* ********************************************************************** */
   void Attach_FunSurf(FunSurfGridPtr fsurf0) {
@@ -131,46 +135,19 @@ public:
     double SurfParams[2];
     double MyFire=this->FireVal;
     double Fire_Deriv = 0.0;
-    //double Fire_Deriv = sigmoid_deriv_postfire(MyFire)/16.0;
-    //double Fire_Deriv = sigmoid_deriv_postfire(MyFire)/8.0;
-    //double Fire_Deriv = sigmoid_deriv_postfire(MyFire);
     Corr = 0.0;
     size_t siz = this->Working_Outs.size();
     for (int cnt=0; cnt<siz; cnt++) {
       downs = this->Working_Outs.at(cnt);
       Corr += downs->GetCorrector();
-      //Corr += Fire_Deriv * downs->GetCorrector();
       TestCorr += downs->GetCorrector();
     }
-    switch (3) {
-    case 0:
-      Fire_Deriv = sigmoid_deriv_postfire(MyFire)/2.0;
-      this->Corrector = Fire_Deriv * Corr;
-      //this->Corrector = Corr;
-      break;
-    case 1:
-      Fire_Deriv = sigmoid_deriv_postfire(MyFire)/2.0;
-      if (Corr>ClipRad) {
-        Corr = ClipRad;
-      }
-      if (Corr<-ClipRad) {
-        Corr = -ClipRad;
-      }
+    switch (TW::TrainWay) {
+    case TW::Classic :
+      Fire_Deriv = sigmoid_deriv_postfire(MyFire);
       this->Corrector = Fire_Deriv * Corr;
       break;
-    case 2:
-      Fire_Deriv = sigmoid_deriv_postfire(MyFire)/2.0;
-      //this->Corrector = Fire_Deriv * ActFun(Corr*32.0); // compress to a small range
-      //this->Corrector = Fire_Deriv * ActFun(Corr*16.0); // compress to a small range
-      //this->Corrector = Fire_Deriv * ActFun(Corr*12.0); // compress to a small range
-      //this->Corrector = Fire_Deriv * ActFun(Corr*8.0); // compress to a small range
-      //this->Corrector = Fire_Deriv * ActFun(Corr*8.0); // compress to a small range
-      //this->Corrector = Fire_Deriv * ActFun(Corr*1.5); // compress to a small range
-      //this->Corrector = Fire_Deriv * 1.37*ActFun(Corr/1.0); // compress to a small range, network 25 wide by 100 deep
-      //this->Corrector = Fire_Deriv * 1.5*ActFun(Corr/1.0); // compress to a small range, network 25 wide by 100 deep
-      this->Corrector = Fire_Deriv * 4.0*ActFun(Corr/4.0); // compress to a small range, network 25 wide by 100 deep
-      break;
-    case 3:
+    case TW::Surf :
       SurfParams[0] = ActFun(Corr/4.0);
       SurfParams[1] = MyFire;
       this->Corrector = this->fsurf->Eval(SurfParams);
@@ -229,6 +206,7 @@ public:
   /* ********************************************************************** */
   void Randomize_Weights() {
     LinkPtr ups;
+    Init();// clear metrics, etc.
     size_t siz = this->Working_Ins.size();
     for (int cnt=0; cnt<siz; cnt++) {
       ups = this->Working_Ins.at(cnt);
@@ -257,7 +235,7 @@ public:
   /* *************************************************************************************************** */
   static double sigmoid_deriv_postfire(double Value) {
     double MovedValue = (1.0+Value)/2.0;// first map range -1 ... +1 to 0 ... +1
-    double retval = 4.0 * MovedValue * (1.0-MovedValue);// APPROXIMATE post sym sigmoid deriv (from fire value after actfun):
+    double retval = 2.0 * MovedValue * (1.0-MovedValue);// APPROXIMATE post sym sigmoid deriv (from fire value after actfun):
     return retval;
     /*
     APPROXIMATE post sym sigmoid deriv (from fire value after actfun):
