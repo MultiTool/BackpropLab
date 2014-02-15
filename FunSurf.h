@@ -188,7 +188,7 @@ public:
     for (int pcnt=0; pcnt<NumCorners; pcnt++) {
       // this first loop hits every corner of the hypercube
       NbrDex = NbrDexs[pcnt];
-      if (NbrDex>=this->NumCells){
+      if (NbrDex>=this->NumCells) {
         printf("Error! NbrDex[%li] is too big for NumCells[%li]. ", NbrDex, NumCells);
         throw 1234;
       }
@@ -277,6 +277,27 @@ public:
 
     // here, PointVal is the final altitude answer.
     return PointVal;
+  }
+  /* ********************************************************************** */
+  void Create_Seed_Surface() {
+    // only works for 2 dimensions, Rez of 4x4.
+    if (NumDims!=2 || Rez!=4) {
+      printf("Wrong dims or rez for Create_Seed_Surface. NumDims:%li, Rez:%li\n", NumDims, Rez);
+      throw 20;
+    }
+    static const double WeirdSpace[16] = {// results of 14 training sets on 3 layer net for 16000 evogens:
+      0.04867, 0.98687, 0.84539, -0.66855, /**/0.08880, -0.10979, 0.94619, -0.40974, /**/-0.36289, -0.09001, 0.16976, 0.18663, /**/-0.03881, -0.17056, 0.14299, 0.39953
+    };
+    for (int cnt=0; cnt<16; cnt++) {
+      Space[cnt]=WeirdSpace[cnt];
+    }
+    /*
+    // results of 14 training sets on 3 layer net for 16000 evogens:
+    0.04867,    0.98687,    0.84539,   -0.66855,
+    0.08880,   -0.10979,    0.94619,   -0.40974,
+    -0.36289,   -0.09001,    0.16976,    0.18663,
+    -0.03881,   -0.17056,    0.14299,    0.39953,
+    */
   }
   /* ********************************************************************** */
   void Create_Sigmoid_Deriv_Surface() {
