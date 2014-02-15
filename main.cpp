@@ -70,19 +70,14 @@ void Test_Overflow() {
 }
 /* ********************************************************************** */
 const double uprecision = 1000000.0;
-double FullTime(struct timeval tm0) {
+double FullTime(struct timeval tm0) {// returns time in seconds and fractions of seconds
   return tm0.tv_sec + ((double)tm0.tv_usec)/uprecision;
 }
 struct timeval tm0, tm1;
 /* ********************************************************************** */
 void TimeCodeSample() {
-  int NumGenerations = 100;
-
   gettimeofday(&tm0, NULL);
-  uint32_t gencnt;
-  for (gencnt=0; gencnt<NumGenerations; gencnt++) {
-    // do stuff here
-  }
+  // do stuff here
   gettimeofday(&tm1, NULL);
 
   double t0num = FullTime(tm0);
@@ -144,15 +139,24 @@ at least Shuffle each truth table.
 
   if (true) {
     uint32_t evogens = 4000;
-    //evogens = 16000;
+    evogens = 16000;
     //evogens = 1000;
     //evogens = 3;
 
     Pop pop;
+    gettimeofday(&tm0, NULL);
     for (uint32_t gencnt=0; gencnt<evogens; gencnt++) {
       printf("gencnt:%li, ", gencnt);
       pop.Gen(evogens, gencnt);
       // pop.Print_Sorted_Scores();
+      gettimeofday(&tm1, NULL);
+      double t0num = FullTime(tm0);
+      double t1num = FullTime(tm1);
+      double SecondsPassed = t1num-t0num;
+      double MinutesPassed = SecondsPassed/60.0;
+      double HoursPassed = MinutesPassed/60.0;
+      // printf(" HoursPassed:%lf, MinutesPassed:%lf, SecondsPassed:%lf\n", HoursPassed, MinutesPassed, SecondsPassed);
+      printf(" HoursPassed:%lf, SecondsPassed:%lf\n", HoursPassed, SecondsPassed);
     }
     //pop.BPNet->Print_Me();
     pop.Print_Sorted_Scores();
