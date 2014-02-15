@@ -126,6 +126,7 @@ public:
     FSurf->Score[0] *= PrimaryScore;//1.0 - ( ((double)FinalFail)/(double)MaxNeuroGens );// oneify
     double Remainder = MaxNeuroGens-GenCnt;// if nobody won *earlier*, then score by average goodness of output
     double temp = ( (WinCnt+Remainder)/((double)MaxNeuroGens) ) - ScoreBefore;
+    temp = (temp+1.0)/2.0;
     if (temp<0.0){temp=0.0;}
     FSurf->Score[1] *= temp;//oneify
   }
@@ -210,7 +211,8 @@ or, do we expose each generation to all of the training sets, and try to make a 
       // if (ScoreDexv[cnt]->FinalFail >= (MaxNeuroGens-DoneThresh)) { break; }
       //if (ScoreDexv[cnt]->Score[0]<0.01) { break; }
       //if (ScoreDexv[cnt]->FinalFail < (MaxNeuroGens-DoneThresh)) { wincnt++; }
-      if (ScoreDexv[cnt]->Score[0]>Fudge) {
+      //if (ScoreDexv[cnt]->Score[0]>Fudge) {
+      if (ScoreDexv[cnt]->Score[0]>0.0) {
         // printf("ScoreDexv[%li]->Score[0]:%lf, wincnt:%li \n", cnt, ScoreDexv[cnt]->Score[0], wincnt);
         wincnt++;
       }
