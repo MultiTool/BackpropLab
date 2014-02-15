@@ -155,8 +155,8 @@ at least Shuffle each truth table.
       double SecondsPassed = t1num-t0num;
       double MinutesPassed = SecondsPassed/60.0;
       double HoursPassed = MinutesPassed/60.0;
-      // printf(" HoursPassed:%lf, MinutesPassed:%lf, SecondsPassed:%lf\n", HoursPassed, MinutesPassed, SecondsPassed);
-      printf(" HoursPassed:%lf, SecondsPassed:%lf\n", HoursPassed, SecondsPassed);
+      printf(" HoursPassed:%lf, MinutesPassed:%lf, SecondsPassed:%lf\n", HoursPassed, MinutesPassed, SecondsPassed);
+      //printf(" HoursPassed:%lf, SecondsPassed:%lf\n", HoursPassed, SecondsPassed);
     }
     //pop.BPNet->Print_Me();
     pop.Print_Sorted_Scores();
