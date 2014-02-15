@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <iostream>
 #include <vector> // example std::vector *vex;
+//#include <array>
 #include <hash_map>
 
 #include <algorithm>    // std::sort

@@ -146,6 +146,8 @@ at least Shuffle each truth table.
     Pop pop;
     gettimeofday(&tm0, NULL);
     for (uint32_t gencnt=0; gencnt<evogens; gencnt++) {
+      printf("\n");
+      printf("-----------------------\n");
       printf("gencnt:%li, ", gencnt);
       pop.Gen(evogens, gencnt);
       // pop.Print_Sorted_Scores();

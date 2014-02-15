@@ -21,6 +21,11 @@ public:
   uint32_t popsz;
   LugarVec forestv;
   OrgVec ScoreDexv; // for sorting
+  typedef struct ScorePair{ double Score[2]; };
+  std::vector<ScorePair> ScoreBuf;
+
+  //std::vector<std::array<double,2>> ScoreBuf;
+  //double *ScoreBuf[2];
   StackPtr BPNet;// crucible
   uint32_t MaxNeuroGens = 2000;
   uint32_t DoneThresh = 32;//64; //32; //64;// 128;//16;
@@ -43,6 +48,8 @@ public:
     this->popsz = popsize;
     forestv.resize(popsize);
     ScoreDexv.resize(popsize);
+    ScoreBuf.resize(popsize);
+    //ScoreBuf = allocsafe()
     for (pcnt=0; pcnt<popsize; pcnt++) {
       lugar = new Lugar();
       org = Org::Abiogenate();
@@ -173,6 +180,7 @@ or, do we expose each generation to all of the training sets, and try to make a 
     }
     double SurvivalRate = 0.5;
     Sort();
+    Record_Scores();
     OrgPtr bestbeast = ScoreDexv[0];
     OrgPtr leastbeast = ScoreDexv[this->popsz-2];
     double avgbeast = AvgBeast();
@@ -247,6 +255,17 @@ or, do we expose each generation to all of the training sets, and try to make a 
       home->Attach_Tenant(child); ScoreDexv[cnt] = child;
       topcnt++;
       if (topcnt>=NumSurvivors) {topcnt=0;}
+    }
+  }
+  /* ********************************************************************** */
+  void Record_Scores(){
+    size_t siz = ScoreDexv.size();
+    double *rec, *src;
+    for (int cnt=0; cnt<siz; cnt++) {
+      rec = ScoreBuf.at(cnt).Score;
+      src = ScoreDexv[cnt]->Score;
+      rec[0] = src[0];
+      rec[1] = src[1];
     }
   }
   /* ********************************************************************** */
