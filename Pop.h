@@ -25,7 +25,7 @@ public:
   uint32_t MaxNeuroGens = 2000;
   uint32_t DoneThresh = 32;//64; //32; //64;// 128;//16;
   double avgnumwinners = 0.0;
-  std::vector<TrainSetPtr> TrainingSets;
+  TrainingSetList TrainingSets;
   /* ********************************************************************** */
   Pop() : Pop(popmax) {
   }
@@ -35,7 +35,7 @@ public:
     LugarPtr lugar;
     Org *org;
     int pcnt;
-    if (true) {
+    if (false) {
       BPNet->Create_Simple();
     } else {
       BPNet->Create_Any_Depth();
@@ -60,11 +60,6 @@ public:
       delete forestv.at(pcnt);
     }
     delete BPNet;
-
-    siz = TrainingSets.size();
-    for (pcnt=0; pcnt<siz; pcnt++) {
-      delete TrainingSets.at(pcnt);
-    }
   }
   /* ********************************************************************** */
   double Dry_Run_Test(uint32_t MaxNeuroGens, TrainSetPtr TSet) {
@@ -215,7 +210,10 @@ or, do we expose each generation to all of the training sets, and try to make a 
       // if (ScoreDexv[cnt]->FinalFail >= (MaxNeuroGens-DoneThresh)) { break; }
       //if (ScoreDexv[cnt]->Score[0]<0.01) { break; }
       //if (ScoreDexv[cnt]->FinalFail < (MaxNeuroGens-DoneThresh)) { wincnt++; }
-      if (ScoreDexv[cnt]->Score[0]>0.0) { wincnt++; }
+      if (ScoreDexv[cnt]->Score[0]>Fudge) {
+        // printf("ScoreDexv[%li]->Score[0]:%lf, wincnt:%li \n", cnt, ScoreDexv[cnt]->Score[0], wincnt);
+        wincnt++;
+      }
       //printf(" FinalFail:%li\n", ScoreDexv[cnt]->FinalFail);
       //wincnt++;
     }
@@ -296,7 +294,8 @@ or, do we expose each generation to all of the training sets, and try to make a 
   void Init_Training_Sets() {
     TrainSetPtr tset;
     IOPairPtr match;
-
+    TrainingSets.All_Truth(2);
+    return;
     tset = new TrainSet(); TrainingSets.push_back(tset);
     { // first XOR
       strcpy(tset->Name, "XOR");
@@ -362,7 +361,7 @@ or, do we expose each generation to all of the training sets, and try to make a 
       match = new IOPair(); tset->push_back(match);
       match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back( 1.0);
     }
-    return;
+    //return;
 
     tset = new TrainSet(); TrainingSets.push_back(tset);
     { // NAND
@@ -379,7 +378,21 @@ or, do we expose each generation to all of the training sets, and try to make a 
       match = new IOPair(); tset->push_back(match);
       match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
     }
+    tset = new TrainSet(); TrainingSets.push_back(tset);
+    { // NOR
+      strcpy(tset->Name, "NOR");
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back(-1.0); match->goalvec.push_back( 1.0);
 
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back(-1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back(-1.0); match->goalvec.push_back(-1.0);
+
+      match = new IOPair(); tset->push_back(match);
+      match->invec.push_back(1.0); match->invec.push_back( 1.0); match->invec.push_back( 1.0); match->goalvec.push_back(-1.0);
+    }
   }
 
 };

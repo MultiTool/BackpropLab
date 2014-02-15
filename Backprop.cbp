@@ -40,6 +40,7 @@
 		<Unit filename="Org.h" />
 		<Unit filename="Pop.h" />
 		<Unit filename="Stack.h" />
+		<Unit filename="TrainingSets.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

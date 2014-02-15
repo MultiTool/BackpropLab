@@ -69,6 +69,28 @@ void Test_Overflow() {
   printf("sum1:%lf\n ", sum1);
 }
 /* ********************************************************************** */
+const double uprecision = 1000000.0;
+double FullTime(struct timeval tm0) {
+  return tm0.tv_sec + ((double)tm0.tv_usec)/uprecision;
+}
+struct timeval tm0, tm1;
+/* ********************************************************************** */
+void TimeCodeSample() {
+  int NumGenerations = 100;
+
+  gettimeofday(&tm0, NULL);
+  uint32_t gencnt;
+  for (gencnt=0; gencnt<NumGenerations; gencnt++) {
+    // do stuff here
+  }
+  gettimeofday(&tm1, NULL);
+
+  double t0num = FullTime(tm0);
+  double t1num = FullTime(tm1);
+  double delta = t1num-t0num;
+  printf("delta T:%lf\n", delta);
+}
+/* ********************************************************************** */
 const uint32_t ndims = 2;
 int main() {
   srand(time(NULL));
@@ -113,7 +135,7 @@ int main() {
   double in0, in1;
   cout << "Hello world!" << endl;
 
-  next();
+  //next();
   /*
 find a way to print final scores without the bottom ones being wiped
 maybe train with a different random truth table each generation.
@@ -124,6 +146,7 @@ at least Shuffle each truth table.
     uint32_t evogens = 4000;
     //evogens = 16000;
     //evogens = 1000;
+    //evogens = 3;
 
     Pop pop;
     for (uint32_t gencnt=0; gencnt<evogens; gencnt++) {
