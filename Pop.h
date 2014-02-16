@@ -190,7 +190,7 @@ or, do we expose each generation to all of the training sets, and try to make a 
     printf("bestbeast->Score:%lf, %lf\n", bestbeast->Score[0], bestbeast->Score[1]);
     printf("avgbeast Score:%lf, numwinners:%li, avgnumwinners:%lf\n", avgbeast, numwinners, avgnumwinners);
     printf("leastbeast->Score:%lf, %lf\n", leastbeast->Score[0], leastbeast->Score[1]);
-    printf("TrainingSets:%li, TrainWay:%s\n", TrainingSets.size(), TW::TrainWayNames[TW::TrainWay]);
+    printf("TrainingSets:%li, TrainWay:%s, DoneThresh:%li\n", TrainingSets.size(), TW::TrainWayNames[TW::TrainWay], DoneThresh);
 
     Birth_And_Death(SurvivalRate);
 
