@@ -22,7 +22,7 @@ public:
   LugarVec forestv;
   OrgVec ScoreDexv; // for sorting
   typedef struct ScorePair{ double Score[2]; };
-  std::vector<ScorePair> ScoreBuf;
+  std::vector<ScorePair> ScoreBuf;// for recording scores even after some creatures are dead
 
   //std::vector<std::array<double,2>> ScoreBuf;
   //double *ScoreBuf[2];
@@ -214,13 +214,19 @@ or, do we expose each generation to all of the training sets, and try to make a 
   /* ********************************************************************** */
   size_t NumWinners() {
     size_t siz = ScoreDexv.size();// only works if sorted descending already
+    double OneScore;
     size_t wincnt = 0;
     for (int cnt=0; cnt<siz; cnt++) {
+      OneScore = ScoreDexv[cnt]->Score[0];
       // if (ScoreDexv[cnt]->FinalFail >= (MaxNeuroGens-DoneThresh)) { break; }
       //if (ScoreDexv[cnt]->Score[0]<0.01) { break; }
       //if (ScoreDexv[cnt]->FinalFail < (MaxNeuroGens-DoneThresh)) { wincnt++; }
       //if (ScoreDexv[cnt]->Score[0]>Fudge) {
-      if (ScoreDexv[cnt]->Score[0]>0.0) {
+      if (0.0<OneScore && OneScore<=Fudge) {
+        printf("Gotta fix how we count winners!\n");
+        throw 20;
+      }
+      if (OneScore>0.0) {
         // printf("ScoreDexv[%li]->Score[0]:%lf, wincnt:%li \n", cnt, ScoreDexv[cnt]->Score[0], wincnt);
         wincnt++;
       }
@@ -260,20 +266,23 @@ or, do we expose each generation to all of the training sets, and try to make a 
   /* ********************************************************************** */
   void Record_Scores(){
     size_t siz = ScoreDexv.size();
-    double *rec, *src;
+    double *Score, *src;
     for (int cnt=0; cnt<siz; cnt++) {
-      rec = ScoreBuf.at(cnt).Score;
+      Score = ScoreBuf.at(cnt).Score;
       src = ScoreDexv[cnt]->Score;
-      rec[0] = src[0];
-      rec[1] = src[1];
+      Score[0] = src[0];
+      Score[1] = src[1];
     }
   }
   /* ********************************************************************** */
   void Print_Sorted_Scores() {
+    double *Score;
     size_t siz = ScoreDexv.size();
     int cnt;
     for (cnt=0; cnt<siz; cnt++) {
-      ScoreDexv[cnt]->Print_Score();
+      // ScoreDexv[cnt]->Print_Score();
+      Score = ScoreBuf.at(cnt).Score;
+      printf(" Score:%lf, %lf\n", Score[0], Score[1]);
     }
   }
   /* ********************************************************************** */
@@ -299,7 +308,7 @@ or, do we expose each generation to all of the training sets, and try to make a 
         org->Mutate_Me(Org_MRate);
       }
     }
-    org = this->ScoreDexv[LastOrg];
+    org = this->ScoreDexv[LastOrg];// very last mutant is 100% randomized, to introduce 'new blood'
     org->Rand_Init();
   }
   /* ********************************************************************** */
