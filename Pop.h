@@ -226,7 +226,7 @@ public:
       //if (ScoreDexv[cnt]->Score[0]>Fudge) {
       if (0.0<OneScore && OneScore<=Fudge) {
         printf("Gotta fix how we count winners!\n");
-        throw 20;
+        // throw 20;
       }
       if (OneScore>=Fudge) {
         // printf("ScoreDexv[%li]->Score[0]:%lf, wincnt:%li \n", cnt, ScoreDexv[cnt]->Score[0], wincnt);
