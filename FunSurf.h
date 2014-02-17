@@ -72,6 +72,7 @@ public:
     CornerStrides = allocsafe(uint32_t, NumCorners);
     Space = allocsafe(double, NumCells);
     Calc_Corner_Strides();
+    Create_Seed_Surface();
   }
   /* ********************************************************************** */
   ~FunSurfGrid() {
@@ -288,8 +289,21 @@ public:
     static const double WeirdSpace[16] = {// results of 14 training sets on 3 layer net for 16000 evogens:
       0.04867, 0.98687, 0.84539, -0.66855, /**/0.08880, -0.10979, 0.94619, -0.40974, /**/-0.36289, -0.09001, 0.16976, 0.18663, /**/-0.03881, -0.17056, 0.14299, 0.39953
     };
+    static const double WeirdSpace2[16] = {
+      -1.00920,   -0.03257,    0.03759,    0.75073, /**/
+      -0.24873,   -0.27913,    0.27312,    0.58155, /**/
+       0.16936,   -0.28706,    0.28773,    0.16862, /**/
+      -0.92993,   -0.04704,    0.03760,    0.47212, /**/
+    };
+    static const double WeirdSpace3[16] = {// symmetrical classic sig deriv
+      -0.06514,   -0.03257,    0.03759,    0.07518, /**/
+      -0.54624,   -0.27913,    0.27312,    0.54624, /**/
+      -0.57546,   -0.28706,    0.28773,    0.57546, /**/
+      -0.09408,   -0.04704,    0.03760,    0.07520, /**/
+    };
     for (int cnt=0; cnt<16; cnt++) {
-      Space[cnt]=WeirdSpace[cnt];
+      //Space[cnt]=WeirdSpace3[cnt]*8.0;
+      Space[cnt]=WeirdSpace3[cnt];
     }
     /*
     // results of 14 training sets on 3 layer net for 16000 evogens:

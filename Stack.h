@@ -56,14 +56,14 @@ public:
     largo = 10;
     //largo = 20;
     //largo = 30;
-    //largo = 30; largo = 100;
     for (int lcnt=0; lcnt<largo; lcnt++) {
       //clnow = new Cluster(4); Layers.push_back(clnow);
       //clnow = new Cluster(2+largo); Layers.push_back(clnow);
       //clnow = new Cluster(largo/4); Layers.push_back(clnow);
       //clnow = new Cluster(largo/2); Layers.push_back(clnow);
-      clnow = new Cluster(2); Layers.push_back(clnow);
-      //clnow = new Cluster(3); Layers.push_back(clnow);
+      //clnow = new Cluster(2); Layers.push_back(clnow);
+      //clnow = new Cluster(5); Layers.push_back(clnow);
+      clnow = new Cluster(3); Layers.push_back(clnow);
       //clnow = new Cluster(10); Layers.push_back(clnow);
       clnow->Connect_Other_Cluster(clprev);
       if(true) {

@@ -35,7 +35,8 @@ public:
     OrgPtr org = new Org();
     org->Rand_Init();
     if (Baselining) {
-      org->Create_Sigmoid_Deriv_Surface();// snox for testing
+      //org->Create_Sigmoid_Deriv_Surface();// snox for testing
+      org->Create_Seed_Surface();// snox for testing
     }
     return org;
   }

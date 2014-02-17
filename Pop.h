@@ -21,7 +21,7 @@ public:
   uint32_t popsz;
   LugarVec forestv;
   OrgVec ScoreDexv; // for sorting
-  typedef struct ScorePair{ double Score[2]; };
+  typedef struct ScorePair { double Score[2]; };
   std::vector<ScorePair> ScoreBuf;// for recording scores even after some creatures are dead
 
   //std::vector<std::array<double,2>> ScoreBuf;
@@ -124,9 +124,9 @@ public:
       //}
     }
     double PrimaryScore = 0;
-    if (FinalFail>(MaxNeuroGens-DoneThresh)){
+    if (FinalFail>=(MaxNeuroGens-DoneThresh)) {
       PrimaryScore = 0.0;
-    }else{
+    } else {
       PrimaryScore = 1.0 - ( ((double)FinalFail)/(double)(MaxNeuroGens-DoneThresh) );// oneify
     }
     FSurf->FinalFail = FinalFail;
@@ -134,15 +134,15 @@ public:
     double Remainder = MaxNeuroGens-GenCnt;// if nobody won *earlier*, then score by average goodness of output
     double temp = ( (WinCnt+Remainder)/((double)MaxNeuroGens) ) - ScoreBefore;
     temp = (temp+1.0)/2.0;
-    if (temp<0.0){temp=0.0;}
+    if (temp<0.0) {temp=0.0;}
     FSurf->Score[1] *= temp;//oneify
   }
   double fred;
   /*
 
   scoring issue for multiple training sets
-do we just change training sets once for each generation?
-or, do we expose each generation to all of the training sets, and try to make a sum score?
+  do we just change training sets once for each generation?
+  or, do we expose each generation to all of the training sets, and try to make a sum score?
 
 
   */
@@ -191,14 +191,16 @@ or, do we expose each generation to all of the training sets, and try to make a 
     printf("avgbeast Score:%lf, numwinners:%li, avgnumwinners:%lf\n", avgbeast, numwinners, avgnumwinners);
     printf("leastbeast->Score:%lf, %lf\n", leastbeast->Score[0], leastbeast->Score[1]);
     printf("TrainingSets:%li, TrainWay:%s, DoneThresh:%li\n", TrainingSets.size(), TW::TrainWayNames[TW::TrainWay], DoneThresh);
-
-    Birth_And_Death(SurvivalRate);
-
-    if (32<(evogens - gencnt)) {
-      Mutate(0.8, 0.8);
-      printf("Mutation \n");
+    if (Org::Baselining) {
+      printf("Baselining, NO MUTATION \n");// coasting, no evo
     } else {
-      printf("NO MUTATION \n");// coasting, no evo
+      Birth_And_Death(SurvivalRate);
+      if (32<(evogens - gencnt)) {
+        Mutate(0.8, 0.8);
+        printf("Mutation \n");
+      } else {
+        printf("NO MUTATION \n");// coasting, no evo
+      }
     }
   }
   /* ********************************************************************** */
@@ -226,7 +228,7 @@ or, do we expose each generation to all of the training sets, and try to make a 
         printf("Gotta fix how we count winners!\n");
         throw 20;
       }
-      if (OneScore>0.0) {
+      if (OneScore>=Fudge) {
         // printf("ScoreDexv[%li]->Score[0]:%lf, wincnt:%li \n", cnt, ScoreDexv[cnt]->Score[0], wincnt);
         wincnt++;
       }
@@ -264,7 +266,7 @@ or, do we expose each generation to all of the training sets, and try to make a 
     }
   }
   /* ********************************************************************** */
-  void Record_Scores(){
+  void Record_Scores() {
     size_t siz = ScoreDexv.size();
     double *Score, *src;
     for (int cnt=0; cnt<siz; cnt++) {
